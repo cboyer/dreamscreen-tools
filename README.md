@@ -72,12 +72,12 @@ Start dreamscreen-daemon with systemd:
 sudo systemctl start dreamscreen
 ```
 
-enable dreamscreen at boot:
+Enable dreamscreen-daemon at boot:
 ```bash
 sudo systemctl enable dreamscreen
 ```
 
-stop dreamscreen daemon with systemd:
+Stop dreamscreen-daemon with systemd:
 ```bash
 sudo systemctl stop dreamscreen
 ```
