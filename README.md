@@ -5,13 +5,13 @@ Currently, only modes/inputs/brightness are implemented.
 
 ## Prerequisites
 
-Your system account must be in the "input" group to open /dev/input/eventX or you will get a *ERROR: cannot open /dev/input/eventX: Permission denied.*
+Your system account must be in the *input* group to open /dev/input/eventX or you will get *ERROR: cannot open /dev/input/eventX: Permission denied.*
 
 ```bash
 sudo usermod -a -G input myaccount
 ```
 
-Find the /dev/input/event*X* for your device:
+Find the correct */dev/input/event* for your device:
 ```bash
 cat /dev/input/eventX | hexdump
 ```
