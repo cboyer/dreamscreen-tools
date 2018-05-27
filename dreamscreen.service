@@ -1,0 +1,13 @@
+[Unit]
+Description=Dreamscreen daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=YOURACCOUNT
+Type=simple
+ExecStart=/usr/local/bin/dreamscreend 192.168.1.102 8888 /dev/input/event2
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
