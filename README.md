@@ -3,7 +3,8 @@ Remotely control [Dreamscreen device](https://www.dreamscreentv.com) with [Remot
 
 Currently, only modes/inputs/brightness are implemented.
 
-Use a key combination in order to avoid unwanted interraction with Kodi.
+Use a key combination in order to avoid unwanted interaction with Kodi.
+
 Default mapping:
 
 Name | Key | Command
@@ -19,6 +20,7 @@ DS_KEY_INPUT_HDMI_3 | 7 | Signal source: HDMI 3
 DS_KEY_BRIGHTNESS_VALUE_UP | 8 | Set brightness + 10%
 DS_KEY_BRIGHTNESS_VALUE_DOWN | 9 | Set brightness - 10%
 
+To change keys, use Linux input event codes: https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
 
 ## Prerequisites
 
