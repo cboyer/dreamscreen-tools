@@ -1,5 +1,5 @@
 # dreamscreen-daemon
-Remotely control Dreamscreen device with [Remote-arduino](https://github.com/cboyer/remote-arduino) or any keyboard-like device from Linux based media centers instead of using a cellphone and official application.
+Remotely control [Dreamscreen device](https://www.dreamscreentv.com) with [Remote-arduino](https://github.com/cboyer/remote-arduino) or any keyboard-like device from Linux based media centers instead of using a cellphone and official application.
 
 Currently, only modes/inputs/brightness are implemented.
 
