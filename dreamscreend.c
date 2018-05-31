@@ -12,21 +12,10 @@ Licensed under GPLv3
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <linux/input.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "key_mapping.h"
 
-/* key mapping, defined to work with remote-arduino, https://github.com/cboyer/remote-arduino */
-#define DS_COMBINATION_KEY KEY_LEFTALT
-#define DS_KEY_MODE_SLEEP KEY_1
-#define DS_KEY_MODE_VIDEO KEY_2
-#define DS_KEY_MODE_MUSIC KEY_3
-#define DS_KEY_MODE_AMBIENT KEY_4
-#define DS_KEY_INPUT_HDMI_1 KEY_5
-#define DS_KEY_INPUT_HDMI_2 KEY_6
-#define DS_KEY_INPUT_HDMI_3 KEY_7
-#define DS_KEY_BRIGHTNESS_VALUE_UP KEY_8
-#define DS_KEY_BRIGHTNESS_VALUE_DOWN KEY_9
 
 /* CRC8 calculation */
 unsigned char calcCRC8(unsigned char *packet) {
@@ -53,11 +42,16 @@ void assemble_packet(unsigned char packet[], unsigned char prefix[], unsigned ch
 
 
 int main(int argc, char **argv) {
-  static const char *const evval[] = { "released", "pressed", "repeated" };
+
+  #ifdef DEBUG
+    static const char *const evval[] = { "released", "pressed", "repeated" };
+    int i;
+  #endif
+
   char *dev;
   struct input_event ev;
   ssize_t n;
-  int fd, sockfd, portno, p, i;
+  int fd, sockfd, portno, p;
   struct sockaddr_in serveraddr;
   struct hostent *server;
   char *hostname;
@@ -138,7 +132,9 @@ int main(int argc, char **argv) {
     if (ev.type == EV_KEY && ev.value >= 0 && ev.value < 2) {
 
       /* print pressed key */
-      printf("Key:\t%s 0x%02X (%d)\n", evval[ev.value], (int)ev.code, (int)ev.code);
+      #ifdef DEBUG
+        printf("Key:\t%s 0x%02X (%d)\n", evval[ev.value], (int)ev.code, (int)ev.code);
+      #endif
 
       if (ev.code == DS_COMBINATION_KEY && ev.value == 1)
         combination = 1;
@@ -200,17 +196,19 @@ int main(int argc, char **argv) {
 
       /* send packet to Dreamscreen */
       if (packet[0] == 0xFC) {
-        p = sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
-        if (p < 0)
-          perror("ERROR: in sendto");
-        else {
+
+        #ifdef DEBUG
           /* print packet */
-          printf("Sent:\t");
+          printf("Packet:\t");
           for (i = 0; i < sizeof(packet); i++){
             printf("0x%02X ", packet[i]);
           }
           printf("\n");
-        }
+        #endif
+
+        p = sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
+        if (p < 0)
+          perror("ERROR: in sendto");
       }
     }
   }
