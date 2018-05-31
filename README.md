@@ -10,6 +10,8 @@ Dreamscreen protocol documentation is available [here](https://planet.neeo.com/m
 
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
+Edit *key_mapping.h* to configure keys to your needs with [Linux input event codes](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
+
 Name | Key | Command
 --- | --- | ---
 DS_COMBINATION_KEY | Left ALT | Key used for combination
@@ -25,7 +27,6 @@ DS_KEY_BRIGHTNESS_VALUE_DOWN | 9 | Set brightness - 10%
 
 For example to activate video mode, use: *Left ALT + 2*
 
-To change keys, use Linux input event codes: https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
 
 ## Prerequisites
 
@@ -51,6 +52,12 @@ Compile source code:
 ```bash
 cd dreamscreen-daemon
 make
+```
+
+Compile source code with debug option (print key events and UDP packet content):
+```bash
+cd dreamscreen-daemon
+make debug
 ```
 
 ## Installation
