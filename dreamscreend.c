@@ -14,8 +14,17 @@ Licensed under GPLv3
 #include <netdb.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
+#include <stdbool.h>
 #include "key_mapping.h"
 
+
+bool volatile keep_running = true;
+
+/* Signal callback */
+void exit_handle(int sig) {
+    keep_running = false;
+}
 
 /* CRC8 calculation */
 unsigned char calcCRC8(unsigned char *packet) {
@@ -56,7 +65,8 @@ int main(int argc, char **argv) {
   struct hostent *server;
   char *hostname;
   unsigned char packet[8];
-  _Bool combination = 0;
+  bool combination = false;
+  struct sigaction act;
 
   /* hex codes used by Dreamscreen: https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf */
   unsigned char prefix[] = { 0xFC, 0x06, 0x00, 0x11, 0x03 };
@@ -79,6 +89,13 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Tips: find working input with: cat /dev/input/eventX | hexdump\n\n");
     exit(EXIT_FAILURE);
   }
+
+  act.sa_handler = exit_handle;
+  sigemptyset (&act.sa_mask);
+  act.sa_flags = 0;
+  sigaction(SIGINT,  &act, 0);
+  sigaction(SIGTERM, &act, 0);
+
   hostname = argv[1];
   portno = atoi(argv[2]);
   dev = argv[3];
@@ -112,7 +129,7 @@ int main(int argc, char **argv) {
   serveraddr.sin_port = htons(portno);
 
   /* main loop, read keyboard input */
-  while (1) {
+  while (keep_running) {
     n = read(fd, &ev, sizeof ev);
     if (n == (ssize_t)-1) {
       if (errno == EINTR)
@@ -137,10 +154,10 @@ int main(int argc, char **argv) {
       #endif
 
       if (ev.code == DS_COMBINATION_KEY && ev.value == 1)
-        combination = 1;
+        combination = true;
 
       if (ev.code == DS_COMBINATION_KEY && ev.value == 0)
-        combination = 0;
+        combination = false;
 
       if (combination && ev.value == 1) {
         switch(ev.code) {
@@ -213,8 +230,8 @@ int main(int argc, char **argv) {
     }
   }
 
+  printf("Exiting...\n");
   fflush(stdout);
-  fprintf(stderr, "ERROR: %s.\n", strerror(errno));
   close(sockfd);
   close(fd);
 
