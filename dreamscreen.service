@@ -2,12 +2,15 @@
 Description=Dreamscreen daemon
 Wants=network-online.target
 After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Service]
-User=YOURACCOUNT
+User=kodi
 Type=simple
-ExecStart=/usr/local/bin/dreamscreend 192.168.1.102 8888 /dev/input/event2
+ExecStart=/usr/local/bin/dreamscreend -h dreamscreen -p 8888 -d "Arduino LLC Arduino Leonardo"
 Restart=always
+RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target

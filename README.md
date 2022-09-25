@@ -1,48 +1,40 @@
 # Dreamscreen-daemon
-
-Remotely control [Dreamscreen device](https://www.dreamscreentv.com) with [Remote-arduino](https://github.com/cboyer/remote-arduino) or any keyboard-like device from Linux based media centers instead of using a cellphone and official application.
+Control [Dreamscreen device](https://www.dreamscreentv.com) with keyboard event on Linux.
 
 Currently, only modes/inputs/brightness are implemented.
 Dreamscreen protocol documentation is available [here](https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf).
 
 
 ## Default key mapping
-
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
 Edit *key_mapping.h* to configure keys to your needs with [Linux input event codes](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
 
 Name | Key | Command
 --- | --- | ---
-DS_COMBINATION_KEY | Left ALT | Key used for combination
-DS_KEY_MODE_SLEEP | 1 | Sleep mode, no light
-DS_KEY_MODE_VIDEO | 2 | Video mode
-DS_KEY_MODE_MUSIC | 3 | Music mode
-DS_KEY_MODE_AMBIENT | 4 | Ambient mode
-DS_KEY_INPUT_HDMI_1 | 5 | Signal source: HDMI 1
-DS_KEY_INPUT_HDMI_2 | 6 | Signal source: HDMI 2
-DS_KEY_INPUT_HDMI_3 | 7 | Signal source: HDMI 3
-DS_KEY_BRIGHTNESS_VALUE_UP | 8 | Set brightness + 10%
-DS_KEY_BRIGHTNESS_VALUE_DOWN | 9 | Set brightness - 10%
+KEY_COMBINATION | Left ALT | Key used for combination
+KEY_MODE_SLEEP | 1 | Sleep mode, no light
+KEY_MODE_VIDEO | 2 | Video mode
+KEY_MODE_MUSIC | 3 | Music mode
+KEY_MODE_AMBIENT | 4 | Ambient mode
+KEY_INPUT_HDMI_1 | 5 | Signal source: HDMI 1
+KEY_INPUT_HDMI_2 | 6 | Signal source: HDMI 2
+KEY_INPUT_HDMI_3 | 7 | Signal source: HDMI 3
+KEY_BRIGHTNESS_VALUE_UP | 8 | Set brightness + 10%
+KEY_BRIGHTNESS_VALUE_DOWN | 9 | Set brightness - 10%
 
 For example to activate video mode, use: *Left ALT + 2*
 
 
 ## Prerequisites
 
-Your system account must be in the *input* group to open /dev/input/eventX or you will get *ERROR: cannot open /dev/input/eventX: Permission denied.*
+User account should be in the *input* group to open /dev/input/eventX and to avoid *ERROR: cannot open /dev/input/eventX: Permission denied.*
 
 ```bash
 sudo usermod -a -G input myaccount
 ```
 
-Find the correct */dev/input/event* for your device:
-```bash
-cat /dev/input/eventX | hexdump
-```
-
 ## Compilation
-
 Clone this repository:
 ```bash
 git clone https://github.com/cboyer/dreamscreen-daemon
@@ -61,8 +53,7 @@ make debug
 ```
 
 ## Installation
-
-Edit *dreamscreen.service* to your needs (user account, eventX).
+Edit *dreamscreen.service* to your needs (user account, device name).
 ```bash
 vi dreamscreen.service
 ```
@@ -73,10 +64,9 @@ sudo make install
 ```
 
 ## Run dreamscreen-daemon
-
 You can run the binary manually:
 ```bash
-dreamscreend 192.168.1.102 8888 /dev/input/event2
+dreamscreend -h 192.168.1.102 -p 8888 -d "Arduino LLC Arduino Leonardo"
 ```
 
 Start dreamscreen-daemon with systemd:
@@ -95,7 +85,6 @@ sudo systemctl stop dreamscreen
 ```
 
 ## Uninstall
-
 Uninstall dreamscreen-daemon:
 ```bash
 sudo make uninstall

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -O2
+CFLAGS=-Wall -Wextra -Werror -O2
 
 default: dreamscreend
 debug: CFLAGS += -DDEBUG
