@@ -1,22 +1,26 @@
-Tools to control[Dreamscreen device](https://www.dreamscreentv.com) from Linux.
+Tools to control [Dreamscreen device](https://www.dreamscreentv.com) from Linux.
 
 Currently, only modes/inputs/brightness are implemented.
+
 Dreamscreen protocol documentation is available [here](https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf).
 
 ## dreamscreen-cli
 Simple command line utility to send command.
 
-Usage: dreamscreen-cli -h <host or ip> -p <port> [COMMAND] [PARAMETER]
+Usage: dreamscreen-cli -h [host or ip] -p [port] [COMMAND] [PARAMETER]
 
 Available commands and parameters:
+
 mode [sleep, video, music, ambient]
+
 input [1, 2, 3]
+
 brightness [0-100]
 
 ## dreamscreend
 Controls Dreamscreen with keyboard event on Linux.
 
-Usage: dreamscreend -h <host or ip> -p <port> -d <device name>
+Usage: dreamscreend -h [host or ip] -p [port] -d [device name]
 
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
