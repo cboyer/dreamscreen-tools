@@ -1,5 +1,5 @@
 /* dreamscreen.h
- * Functions used by dreamscreend.
+ * Dreamscreen protocol hex values and common functions.
  * Copyright (C) 2022 C. Boyer
  *
  * This program is free software: you can redistribute it and/or modify  
@@ -15,18 +15,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dreamscreen_hex.h"
+/* Protocol documentation: https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf */
+#define PACKET_START        0xFC
+#define FIXED_LENGTH        0x06
+#define GROUP_ADDR          0x00
+#define FLAG                0x11
+#define UPPER_CMD           0x03
 
-#define MAX_LEN 500
-#define SYS_INPUT_PATH "/sys/class/input/"
-#define DEV_INPUT_PATH "/dev/input/"
+#define CMD_MODE            0x01
+#define MODE_SLEEP          0x00
+#define MODE_VIDEO          0x01
+#define MODE_MUSIC          0x02
+#define MODE_AMBIENT        0x03
+
+#define CMD_INPUT           0x20
+#define INPUT_HDMI_1        0x00
+#define INPUT_HDMI_2        0x01
+#define INPUT_HDMI_3        0x02
+
+#define CMD_BRIGHTNESS      0x02
+#define DEFAULT_BRIGHTNESS  0x0A
 
 
-int volatile keep_running = 1;
 
-void exit_handle() {
-    keep_running = 0;
-}
+
 
 unsigned char crc8(unsigned char *packet) {
     unsigned char crc_table[] =  {
@@ -55,11 +67,6 @@ unsigned char crc8(unsigned char *packet) {
     }
 
     return crc;
-}
-
-void show_usage(char *exec_name) {
-    fprintf(stderr, "Usage: %s -h <host> -p <port> -d <device name>\n", exec_name);
-    fprintf(stderr, "Example: %s -h 192.168.0.22 -p 8888 -d \"my_keyboard\"\n", exec_name);
 }
 
 void build_packet(unsigned char packet[], unsigned char command, unsigned char payload) {

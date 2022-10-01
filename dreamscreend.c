@@ -29,7 +29,8 @@
 #include <signal.h>
 #include <getopt.h>
 #include "dreamscreen.h"
-#include "key_mapping.h"
+#include "dreamscreend.h"
+#include "dreamscreend_keys.h"
 
 
 int main(int argc, char **argv) {

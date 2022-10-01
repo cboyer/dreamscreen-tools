@@ -1,14 +1,26 @@
-# Dreamscreen-daemon
-Control [Dreamscreen device](https://www.dreamscreentv.com) with keyboard event on Linux.
+Tools to control[Dreamscreen device](https://www.dreamscreentv.com) from Linux.
 
 Currently, only modes/inputs/brightness are implemented.
 Dreamscreen protocol documentation is available [here](https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf).
 
+## dreamscreen-cli
+Simple command line utility to send command.
 
-## Default key mapping
+Usage: dreamscreen-cli -h <host or ip> -p <port> [COMMAND] [PARAMETER]
+
+Available commands and parameters:
+mode [sleep, video, music, ambient]
+input [1, 2, 3]
+brightness [0-100]
+
+## dreamscreend
+Controls Dreamscreen with keyboard event on Linux.
+
+Usage: dreamscreend -h <host or ip> -p <port> -d <device name>
+
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
-Edit *key_mapping.h* to configure keys to your needs with [Linux input event codes](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
+Edit *dreamscreend_keys.h* to configure keys to your needs with [Linux input event codes](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h).
 
 Name | Key | Command
 --- | --- | ---
@@ -27,61 +39,31 @@ For example to activate video mode, use: *Left ALT + 2*
 
 
 ## Prerequisites
-
 User account should be in the *input* group to open /dev/input/eventX and to avoid *ERROR: cannot open /dev/input/eventX: Permission denied.*
 
 ```bash
-sudo usermod -a -G input myaccount
+sudo usermod -a -G input kodi
 ```
 
 ## Compilation
-Clone this repository:
+Clone this repository and code compilation:
 ```bash
 git clone https://github.com/cboyer/dreamscreen-daemon
+cd dreamscreen-daemon
+make all
 ```
 
-Compile source code:
-```bash
-cd dreamscreen-daemon
-make
-```
-
-Compile source code with debug option (print key events and UDP packet content):
-```bash
-cd dreamscreen-daemon
-make debug
-```
+Alternatively, you can compile code with `make debug` to print key events and UDP packet content.
+Compile only one tool with `make cli` for dreamscreen-cli and `make dreamscreend` for dreamscreend.
 
 ## Installation
-Edit *dreamscreen.service* to your needs (user account, device name).
+Edit *dreamscreend.service* to your needs (user account, device name).
 ```bash
-vi dreamscreen.service
-```
-
-Install dreamscreen-daemon:
-```bash
+vi dreamscreend.service
 sudo make install
-```
 
-## Run dreamscreen-daemon
-You can run the binary manually:
-```bash
-dreamscreend -h 192.168.1.102 -p 8888 -d "Arduino LLC Arduino Leonardo"
-```
-
-Start dreamscreen-daemon with systemd:
-```bash
-sudo systemctl start dreamscreen
-```
-
-Enable dreamscreen-daemon at boot:
-```bash
-sudo systemctl enable dreamscreen
-```
-
-Stop dreamscreen-daemon with systemd:
-```bash
-sudo systemctl stop dreamscreen
+sudo systemctl start dreamscreend
+sudo systemctl enable dreamscreend
 ```
 
 ## Uninstall
