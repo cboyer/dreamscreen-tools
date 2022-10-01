@@ -9,13 +9,12 @@ Simple command line utility to send command.
 
 Usage: dreamscreen-cli -h [host or ip] -p [port] [COMMAND] [PARAMETER]
 
-Available commands and parameters:
+Command     | parameter
+---         | ---
+mode        | sleep, video, music, ambient
+input       | 1, 2, 3
+brightness  | integer value from 0 to 100
 
-mode [sleep, video, music, ambient]
-
-input [1, 2, 3]
-
-brightness [0-100]
 
 ## dreamscreend
 Controls Dreamscreen with keyboard event on Linux.
@@ -52,8 +51,8 @@ sudo usermod -a -G input kodi
 ## Compilation
 Clone this repository and code compilation:
 ```bash
-git clone https://github.com/cboyer/dreamscreen-daemon
-cd dreamscreen-daemon
+git clone https://github.com/cboyer/dreamscreen-tools
+cd dreamscreen-tools
 make all
 ```
 
