@@ -1,4 +1,4 @@
-/* Dreamscreen-cli.c
+/* dreamscreen-cli.c
  * Control Dreamscreen device from command line.
  * Copyright (C) 2022 C. Boyer
  *
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     }
 
   if(port == NULL)
-    port = "8888";
+    port = DEFAULT_PORT;
 
   if(host == NULL || command == NULL || parameter == NULL) {
     fprintf(stderr, "Missing parameters\n");

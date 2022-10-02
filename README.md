@@ -9,7 +9,7 @@ Simple command line utility to send command.
 
 Usage: dreamscreen-cli -h [host or ip] -p [port] [COMMAND] [PARAMETER]
 
-Command     | parameter
+Command     | Parameter
 ---         | ---
 mode        | sleep, video, music, ambient
 input       | 1, 2, 3

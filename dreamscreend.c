@@ -69,19 +69,22 @@ int main(int argc, char **argv) {
 
       case ':':
         printf("Option needs a value\n");
-        show_usage(argv[0]);
+        usage();
         return -1;
 
       case '?':
         printf("Unknown option: %c\n", optopt);
-        show_usage(argv[0]);
+        usage();
         return -1;
     }
   }
 
-  if(host == NULL || port == NULL || device_name == NULL) {
+  if(port == NULL)
+    port = DEFAULT_PORT;
+
+  if(host == NULL || device_name == NULL) {
     fprintf(stderr, "Missing parameters\n");
-    show_usage(argv[0]);
+    usage();
     return -1;
   }
 

@@ -35,7 +35,7 @@
 
 #define CMD_BRIGHTNESS      0x02
 #define DEFAULT_BRIGHTNESS  0x0A
-
+#define DEFAULT_PORT        "8888"
 
 
 

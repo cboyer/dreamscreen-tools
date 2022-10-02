@@ -25,7 +25,12 @@ void exit_handle() {
     keep_running = 0;
 }
 
-void show_usage(char *exec_name) {
-    fprintf(stderr, "Usage: %s -h <host> -p <port> -d <device name>\n", exec_name);
-    fprintf(stderr, "Example: %s -h 192.168.0.22 -p 8888 -d \"my_keyboard\"\n", exec_name);
+void usage(void) {
+    printf("\
+Usage: -h <host> -p <port> -d <device name>\n\
+Send a command to a Dreamscreen device\n\n\
+  -h \t Dreamscreen's hostname or ip address\n\
+  -p \t Dreamscreen's port, if not provided the default value is 8888\n\
+  -d \t Device name for event listening\
+    \n\n");
 }
