@@ -80,8 +80,7 @@ unsigned int parameter_hex(char *command, char *parameter) {
     if(ret > 100)
       return 100;
 
-    if(ret > 0)
-      return ret;
+    return ret;
   }
 
   return UNKNOWN;
