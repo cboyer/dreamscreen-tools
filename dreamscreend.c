@@ -34,11 +34,11 @@
 
 
 int main(int argc, char **argv) {
-  int opt, fd, sock, combination = 0, p;
+  int opt, fd, sock, combination = 0;
   ssize_t n;
   DIR *dp;
   FILE *file;
-  unsigned char packet[8];
+  unsigned char packet[MAX_PACKET_LEN];
   char buf[MAX_LEN], device_path[MAX_LEN];
   char *host = NULL, *port = NULL, *device_name = NULL;
   struct dirent *ep;
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
     perror("ERROR: cannot open socket");
     return -1;
   }
-
+  
   /* Resolve DNS entry */
   dest = gethostbyname(host);
   if(dest == NULL) {
@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
   }
 
   /* Build destination address */
-  bzero((char *) &dest_addr, sizeof(dest_addr));
+  memset(&dest_addr, 0x00, sizeof(dest_addr));
   dest_addr.sin_family = AF_INET;
   bcopy((char *)dest->h_addr,
   (char *)&dest_addr.sin_addr.s_addr, dest->h_length);
@@ -176,8 +176,6 @@ int main(int argc, char **argv) {
       break;
     }
 
-    bzero(packet, sizeof(packet));
-
     /* Build UDP packet from keyboard event */
     if(ev.type == EV_KEY && ev.value >= 0 && ev.value < 2) {
 
@@ -194,31 +192,31 @@ int main(int argc, char **argv) {
       if(combination && ev.value == 1) {
         switch(ev.code) {
           case KEY_MODE_SLEEP:
-            build_packet(packet, CMD_MODE, MODE_SLEEP);
+            build_packet(packet, build_message("mode", "sleep"));
             break;
 
           case KEY_MODE_VIDEO:
-            build_packet(packet, CMD_MODE, MODE_VIDEO);
+            build_packet(packet, build_message("mode", "video"));
             break;
 
           case KEY_MODE_MUSIC:
-            build_packet(packet, CMD_MODE, MODE_MUSIC);
+            build_packet(packet, build_message("mode", "music"));
             break;
 
           case KEY_MODE_AMBIENT:
-            build_packet(packet, CMD_MODE, MODE_AMBIENT);
+            build_packet(packet, build_message("mode", "ambient"));
             break;
 
           case KEY_INPUT_HDMI_1:
-            build_packet(packet, CMD_INPUT, INPUT_HDMI_1);
+            build_packet(packet, build_message("input", "1"));
             break;
 
           case KEY_INPUT_HDMI_2:
-            build_packet(packet, CMD_INPUT, INPUT_HDMI_2);
+            build_packet(packet, build_message("input", "2"));
             break;
 
           case KEY_INPUT_HDMI_3:
-            build_packet(packet, CMD_INPUT, INPUT_HDMI_3);
+            build_packet(packet, build_message("input", "3"));
             break;
 
           case KEY_BRIGHTNESS_VALUE_UP:
@@ -226,7 +224,8 @@ int main(int argc, char **argv) {
             if(brightness_value > 100)
               brightness_value = 10;
 
-            build_packet(packet, CMD_BRIGHTNESS, brightness_value);
+            sprintf(buf, "%d", brightness_value);
+            build_packet(packet, build_message("brightness", buf));
             break;
 
           case KEY_BRIGHTNESS_VALUE_DOWN:
@@ -235,11 +234,12 @@ int main(int argc, char **argv) {
             else
               brightness_value = 100;
 
-            build_packet(packet, CMD_BRIGHTNESS, brightness_value);
+            sprintf(buf, "%d", brightness_value);
+            build_packet(packet, build_message("brightness", buf));
             break;
 
           default:
-            bzero(packet, sizeof(packet));
+            memset(packet, 0x00, sizeof(packet));
         }
       }
 
@@ -248,14 +248,13 @@ int main(int argc, char **argv) {
 
         #ifdef DEBUG
           printf("Packet:\t");
-          for (int i = 0; i < sizeof(packet); i++) {
+          for (int i = 0; i < packet[1] + 2; i++) {
             printf("0x%02X ", packet[i]);
           }
           printf("\n");
         #endif
 
-        p = sendto(sock, packet, sizeof(packet), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
-        if(p < 0)
+        if(sendto(sock, packet, packet[1] + 2, 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr)) < 0)
           perror("ERROR: in sendto");
       }
     }

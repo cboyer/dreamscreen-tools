@@ -15,30 +15,59 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define MAX_PACKET_LEN          18
+#define MAX_PAYLOAD_LEN         MAX_PACKET_LEN - 7
+#define DEFAULT_PORT            "8888"
+#define STRTOUL_DEFAULT_BASE    10
+#define STRTOK_DEFAULT_DELIM    ","
+
 /* Protocol documentation: https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf */
-#define PACKET_START        0xFC
-#define FIXED_LENGTH        0x06
-#define GROUP_ADDR          0x00
-#define FLAG                0x11
-#define UPPER_CMD           0x03
+#define PACKET_START            0xFC
+#define GROUP_ADDR              0x00
+#define FLAG                    0x11
+#define UPPER_CMD               0x03
 
-#define CMD_MODE            0x01
-#define MODE_SLEEP          0x00
-#define MODE_VIDEO          0x01
-#define MODE_MUSIC          0x02
-#define MODE_AMBIENT        0x03
+#define CMD_MODE                0x01
+#define MODE_SLEEP              0x00
+#define MODE_VIDEO              0x01
+#define MODE_MUSIC              0x02
+#define MODE_AMBIENT            0x03
 
-#define CMD_INPUT           0x20
-#define INPUT_HDMI_1        0x00
-#define INPUT_HDMI_2        0x01
-#define INPUT_HDMI_3        0x02
+#define CMD_INPUT               0x20
+#define INPUT_HDMI_1            0x00
+#define INPUT_HDMI_2            0x01
+#define INPUT_HDMI_3            0x02
 
-#define CMD_BRIGHTNESS      0x02
-#define DEFAULT_BRIGHTNESS  0x0A
-#define DEFAULT_PORT        "8888"
+#define CMD_BRIGHTNESS          0x02
+#define DEFAULT_BRIGHTNESS      0x32
+
+#define CMD_AMBIENT_MODE        0x08
+#define AMBIENT_MODE_COLOR      0x01
+#define AMBIENT_MODE_SCENE      0x02
+
+#define CMD_AMBIENT_COLOR       0x05
+#define DEFAULT_AMBIENT_COLOR   "\x09\x09\x09"
+
+#define CMD_AMBIENT_SCENE       0x0D
+#define AMBIENT_SCENE_RANDOM    0x00
+#define AMBIENT_SCENE_FIRESIDE  0x01
+#define AMBIENT_SCENE_TWINKLE   0x02
+#define AMBIENT_SCENE_OCEAN     0x03
+#define AMBIENT_SCENE_RAINBOW   0x04
+#define AMBIENT_SCENE_JULY4TH   0x05
+#define AMBIENT_SCENE_HOLYDAY   0x06
+#define AMBIENT_SCENE_POP       0x07
+#define AMBIENT_SCENE_FOREST    0x08
 
 
 
+
+struct DS_message {
+    int command_upper;
+    int command_lower;
+    int payload[MAX_PAYLOAD_LEN];
+    int payload_len;
+};
 
 unsigned char crc8(unsigned char *packet) {
     unsigned char crc_table[] =  {
@@ -69,13 +98,180 @@ unsigned char crc8(unsigned char *packet) {
     return crc;
 }
 
-void build_packet(unsigned char packet[], unsigned char command, unsigned char payload) {
+void build_packet(unsigned char packet[], struct DS_message message) {
+    int packet_len = message.payload_len + 5;
+    memset(packet, 0x00, MAX_PACKET_LEN);
+
     packet[0] = PACKET_START;
-    packet[1] = FIXED_LENGTH;
+    packet[1] = packet_len;
     packet[2] = GROUP_ADDR;
     packet[3] = FLAG;
-    packet[4] = UPPER_CMD;
-    packet[5] = command;
-    packet[6] = payload;
-    packet[7] = crc8(packet);
+    packet[4] = message.command_upper;
+    packet[5] = message.command_lower;
+
+    for(int i = 0; i < message.payload_len && i < MAX_PAYLOAD_LEN; i++)
+      packet[i + 6] = message.payload[i];
+
+    packet[packet_len + 1] = crc8(packet);
+}
+
+struct DS_message build_message(char *command, char *parameter) {
+  struct DS_message message;
+  message.command_upper = -1;
+  message.command_lower = -1;
+  message.payload[0] = -1;
+  message.payload_len = -1;
+
+  if(strcmp(command, "mode") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_MODE;
+
+    if(strcmp(parameter, "sleep") == 0) {
+      message.payload[0] = MODE_SLEEP;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "video") == 0) {
+      message.payload[0] = MODE_VIDEO;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "music") == 0) {
+      message.payload[0] = MODE_MUSIC;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "ambient") == 0) {
+      message.payload[0] = MODE_AMBIENT;
+      message.payload_len = 1;
+    }
+  }
+
+  else if(strcmp(command, "input") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_INPUT;
+
+    if(strcmp(parameter, "1") == 0) {
+      message.payload[0] = INPUT_HDMI_1;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "2") == 0) {
+      message.payload[0] = INPUT_HDMI_2;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "3") == 0) {
+      message.payload[0] = INPUT_HDMI_3;
+      message.payload_len = 1;
+    }
+  }
+
+  else if(strcmp(command, "brightness") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_BRIGHTNESS;
+    char *p;
+    unsigned long ret;
+    ret = strtoul(parameter, &p, STRTOUL_DEFAULT_BASE);
+
+    if(ret > 100)
+      message.payload[0] = 100;
+    else
+      message.payload[0] = ret;
+
+    message.payload_len = 1;
+  }
+
+  else if(strcmp(command, "ambient_mode") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_AMBIENT_MODE;
+
+    if(strcmp(parameter, "color") == 0) {
+      message.payload[0] = AMBIENT_MODE_COLOR;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "scene") == 0) {
+      message.payload[0] = AMBIENT_MODE_SCENE;
+      message.payload_len = 1;
+    }
+  }
+  
+  else if(strcmp(command, "ambient_scene") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_AMBIENT_SCENE;
+
+    if(strcmp(parameter, "random_color") == 0) {
+      message.payload[0] = AMBIENT_SCENE_RANDOM;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "fireside") == 0) {
+      message.payload[0] = AMBIENT_SCENE_FIRESIDE;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "twinkle") == 0) {
+      message.payload[0] = AMBIENT_SCENE_TWINKLE;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "ocean") == 0) {
+      message.payload[0] = AMBIENT_SCENE_OCEAN;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "rainbow") == 0) {
+      message.payload[0] = AMBIENT_SCENE_RAINBOW;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "july4th") == 0) {
+      message.payload[0] = AMBIENT_SCENE_JULY4TH;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "holyday") == 0) {
+      message.payload[0] = AMBIENT_SCENE_HOLYDAY;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "pop") == 0) {
+      message.payload[0] = AMBIENT_SCENE_POP;
+      message.payload_len = 1;
+    }
+    
+    else if(strcmp(parameter, "enchanted_forest") == 0) {
+      message.payload[0] = AMBIENT_SCENE_FOREST;
+      message.payload_len = 1;
+    }
+  }
+
+  else if(strcmp(command, "ambient_color") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_AMBIENT_COLOR;
+
+    char *p, *pp;
+    unsigned long ret;
+    int i = 0;
+
+    p = strtok(parameter, STRTOK_DEFAULT_DELIM);
+
+    for(i = 0; i < 3 && p != NULL; i++) {
+      ret = strtoul(p, &pp, STRTOUL_DEFAULT_BASE);
+
+      if(ret > 0x255)
+        message.payload[i] = 0x255;
+      else
+        message.payload[i] = ret;
+
+      p = strtok(NULL, STRTOK_DEFAULT_DELIM);
+      message.payload_len = i + 1;
+    }
+
+    if(i != 3)
+      message.payload[0] = -1;
+  }
+
+  return message;
 }

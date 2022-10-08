@@ -32,10 +32,11 @@
 
 int main(int argc, char **argv) {
   int opt, sock;
-  unsigned char packet[8];
+  unsigned char packet[MAX_PACKET_LEN];
   char *host = NULL, *port = NULL, *command = NULL, *parameter = NULL;
   struct hostent *dest;
   struct sockaddr_in dest_addr;
+  struct DS_message message;
 
   while((opt = getopt(argc, argv, ":p:h:")) != -1) {
     switch(opt) { 
@@ -78,13 +79,15 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  if(command_hex(command) == UNKNOWN) {
+  message = build_message(command, parameter);
+
+  if(message.command_lower == -1) {
     fprintf(stderr, "Unknown command '%s'\n", command);
     usage();
     return -1;
   }
 
-  if(parameter_hex(command, parameter) == UNKNOWN) {
+  if(message.payload[0] == -1) {
     fprintf(stderr, "Unknown parameter '%s' for command '%s'\n", parameter, command);
     usage();
     return -1;
@@ -105,24 +108,24 @@ int main(int argc, char **argv) {
   }
 
   /* Build destination address */
-  bzero((char *) &dest_addr, sizeof(dest_addr));
+  memset(&dest_addr, 0x00, sizeof(dest_addr));
   dest_addr.sin_family = AF_INET;
   bcopy((char *)dest->h_addr,
   (char *)&dest_addr.sin_addr.s_addr, dest->h_length);
   dest_addr.sin_port = htons(atoi(port));
 
   /* Build and send packet to Dreamscreen */
-  build_packet(packet, command_hex(command), parameter_hex(command, parameter));
+  build_packet(packet, message);
 
   #ifdef DEBUG
     printf("Packet:\t");
-    for (int i = 0; i < sizeof(packet); i++) {
+    for (int i = 0; i < packet[1] + 2; i++) {
       printf("0x%02X ", packet[i]);
     }
     printf("\n");
   #endif
 
-  if(sendto(sock, packet, sizeof(packet), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr)) < 0)
+  if(sendto(sock, packet, packet[1] + 2, 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr)) < 0)
     perror("ERROR: in sendto");
 
   fflush(stdout);

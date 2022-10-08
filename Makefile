@@ -4,7 +4,7 @@ CFLAGS=-Wall -Wextra -Werror -O2
 default: all
 debug: CFLAGS += -DDEBUG
 debug: dreamscreend dreamscreen-cli
-all: dreamscreend dreamscreen-cli
+all: dreamscreen-cli dreamscreend
 cli: dreamscreen-cli
 
 dreamscreen-cli.o: dreamscreen-cli.c
