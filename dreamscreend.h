@@ -27,10 +27,11 @@ void exit_handle() {
 
 void usage(void) {
     printf("\
-Usage: -h <host> -p <port> -d <device name>\n\
+Usage: -h <host> -p <port> -g <group address> -d <device name>\n\
 Send a command to a Dreamscreen device\n\n\
   -h \t Dreamscreen's hostname or ip address\n\
   -p \t Dreamscreen's port, if not provided the default value is 8888\n\
+  -g \t Group address, if not provided the default value is 0x00\n\
   -d \t Device name for event listening\
     \n\n");
 }

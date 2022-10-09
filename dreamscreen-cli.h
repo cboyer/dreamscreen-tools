@@ -17,10 +17,11 @@
 
 void usage(void) {
     printf("\
-Usage: -h <host> -p <port> [COMMAND] [PARAMETER]\n\
+Usage: -h <host> -p <port> -g <group address> [COMMAND] [PARAMETER]\n\
 Send a command to a Dreamscreen device\n\n\
   -h \t Device's hostname or ip address\n\
-  -p \t Device's port, if not provided the default value is 8888\n\n\
+  -p \t Device's port, if not provided the default value is 8888\n\
+  -g \t Group address, if not provided the default value is 0x00\n\n\
 Available commands and parameters:\n\
   mode \t\t LEDs mode\n\
   \t\t [sleep, video, music, ambient]\n\

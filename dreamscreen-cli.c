@@ -33,12 +33,12 @@
 int main(int argc, char **argv) {
   int opt, sock;
   unsigned char packet[MAX_PACKET_LEN];
-  char *host = NULL, *port = NULL, *command = NULL, *parameter = NULL;
+  char *host = NULL, *port = NULL, *group_addr = NULL, *command = NULL, *parameter = NULL;
   struct hostent *dest;
   struct sockaddr_in dest_addr;
   struct DS_message message;
 
-  while((opt = getopt(argc, argv, ":p:h:")) != -1) {
+  while((opt = getopt(argc, argv, ":g:p:h:")) != -1) {
     switch(opt) { 
       case 'h':
         host = optarg;
@@ -46,6 +46,10 @@ int main(int argc, char **argv) {
 
       case 'p':
         port = optarg;
+        break;
+
+      case 'g':
+        group_addr = optarg;
         break;
 
       case ':':
@@ -73,21 +77,24 @@ int main(int argc, char **argv) {
   if(port == NULL)
     port = DEFAULT_PORT;
 
+  if(group_addr == NULL)
+    group_addr = DEFAULT_GROUP_ADDR;
+
   if(host == NULL || command == NULL || parameter == NULL) {
     fprintf(stderr, "Missing parameters\n");
     usage();
     return -1;
   }
 
-  message = build_message(command, parameter);
+  message = build_message(group_addr, command, parameter);
 
-  if(message.command_lower == -1) {
+  if(message.command_lower < 0) {
     fprintf(stderr, "Unknown command '%s'\n", command);
     usage();
     return -1;
   }
 
-  if(message.payload[0] == -1) {
+  if(message.payload[0] < 0) {
     fprintf(stderr, "Unknown parameter '%s' for command '%s'\n", parameter, command);
     usage();
     return -1;

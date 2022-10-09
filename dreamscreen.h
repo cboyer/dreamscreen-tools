@@ -18,12 +18,11 @@
 #define MAX_PACKET_LEN          18
 #define MAX_PAYLOAD_LEN         MAX_PACKET_LEN - 7
 #define DEFAULT_PORT            "8888"
-#define STRTOUL_DEFAULT_BASE    10
-#define STRTOK_DEFAULT_DELIM    ","
+#define DEFAULT_GROUP_ADDR      "0x00"
+#define DEFAULT_STRTOK_DELIM    ","
 
 /* Protocol documentation: https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf */
 #define PACKET_START            0xFC
-#define GROUP_ADDR              0x00
 #define FLAG                    0x11
 #define UPPER_CMD               0x03
 
@@ -63,10 +62,11 @@
 
 
 struct DS_message {
-    int command_upper;
-    int command_lower;
-    int payload[MAX_PAYLOAD_LEN];
-    int payload_len;
+  int group_addr;
+  int command_upper;
+  int command_lower;
+  int payload[MAX_PAYLOAD_LEN];
+  int payload_len;
 };
 
 unsigned char crc8(unsigned char *packet) {
@@ -104,7 +104,7 @@ void build_packet(unsigned char packet[], struct DS_message message) {
 
     packet[0] = PACKET_START;
     packet[1] = packet_len;
-    packet[2] = GROUP_ADDR;
+    packet[2] = message.group_addr;
     packet[3] = FLAG;
     packet[4] = message.command_upper;
     packet[5] = message.command_lower;
@@ -115,12 +115,21 @@ void build_packet(unsigned char packet[], struct DS_message message) {
     packet[packet_len + 1] = crc8(packet);
 }
 
-struct DS_message build_message(char *command, char *parameter) {
+struct DS_message build_message(char *group_addr, char *command, char *parameter) {
   struct DS_message message;
   message.command_upper = -1;
   message.command_lower = -1;
   message.payload[0] = -1;
   message.payload_len = -1;
+
+  char *p;
+  unsigned long ret;
+  ret = strtoul(group_addr, &p, 16);
+
+  if(ret > 0x255)
+    ret = 0x255;
+
+  message.group_addr = ret;
 
   if(strcmp(command, "mode") == 0) {
     message.command_upper = UPPER_CMD;
@@ -170,9 +179,7 @@ struct DS_message build_message(char *command, char *parameter) {
   else if(strcmp(command, "brightness") == 0) {
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_BRIGHTNESS;
-    char *p;
-    unsigned long ret;
-    ret = strtoul(parameter, &p, STRTOUL_DEFAULT_BASE);
+    ret = strtoul(parameter, &p, 10);
 
     if(ret > 100)
       message.payload[0] = 100;
@@ -251,21 +258,20 @@ struct DS_message build_message(char *command, char *parameter) {
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_AMBIENT_COLOR;
 
-    char *p, *pp;
-    unsigned long ret;
+    char *pp;
     int i = 0;
 
-    p = strtok(parameter, STRTOK_DEFAULT_DELIM);
+    p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
     for(i = 0; i < 3 && p != NULL; i++) {
-      ret = strtoul(p, &pp, STRTOUL_DEFAULT_BASE);
+      ret = strtoul(p, &pp, 10);
 
       if(ret > 0x255)
         message.payload[i] = 0x255;
       else
         message.payload[i] = ret;
 
-      p = strtok(NULL, STRTOK_DEFAULT_DELIM);
+      p = strtok(NULL, DEFAULT_STRTOK_DELIM);
       message.payload_len = i + 1;
     }
 

@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
   FILE *file;
   unsigned char packet[MAX_PACKET_LEN];
   char buf[MAX_LEN], device_path[MAX_LEN];
-  char *host = NULL, *port = NULL, *device_name = NULL;
+  char *host = NULL, *port = NULL, *group_addr = NULL, *device_name = NULL;
   struct dirent *ep;
   struct sigaction act;
   struct hostent *dest;
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   static const char *const evval[] = { "released", "pressed", "repeated" };
   #endif
 
-  while((opt = getopt(argc, argv, ":h:p:d:")) != -1) {
+  while((opt = getopt(argc, argv, ":g:h:p:d:")) != -1) {
     switch(opt) { 
       case 'h':
         host = optarg;
@@ -61,6 +61,10 @@ int main(int argc, char **argv) {
 
       case 'p':
         port = optarg;
+        break;
+
+      case 'g':
+        group_addr = optarg;
         break;
 
       case 'd':
@@ -81,6 +85,9 @@ int main(int argc, char **argv) {
 
   if(port == NULL)
     port = DEFAULT_PORT;
+
+  if(group_addr == NULL)
+    group_addr = DEFAULT_GROUP_ADDR;
 
   if(host == NULL || device_name == NULL) {
     fprintf(stderr, "Missing parameters\n");
@@ -192,31 +199,31 @@ int main(int argc, char **argv) {
       if(combination && ev.value == 1) {
         switch(ev.code) {
           case KEY_MODE_SLEEP:
-            build_packet(packet, build_message("mode", "sleep"));
+            build_packet(packet, build_message(group_addr, "mode", "sleep"));
             break;
 
           case KEY_MODE_VIDEO:
-            build_packet(packet, build_message("mode", "video"));
+            build_packet(packet, build_message(group_addr, "mode", "video"));
             break;
 
           case KEY_MODE_MUSIC:
-            build_packet(packet, build_message("mode", "music"));
+            build_packet(packet, build_message(group_addr, "mode", "music"));
             break;
 
           case KEY_MODE_AMBIENT:
-            build_packet(packet, build_message("mode", "ambient"));
+            build_packet(packet, build_message(group_addr, "mode", "ambient"));
             break;
 
           case KEY_INPUT_HDMI_1:
-            build_packet(packet, build_message("input", "1"));
+            build_packet(packet, build_message(group_addr, "input", "1"));
             break;
 
           case KEY_INPUT_HDMI_2:
-            build_packet(packet, build_message("input", "2"));
+            build_packet(packet, build_message(group_addr, "input", "2"));
             break;
 
           case KEY_INPUT_HDMI_3:
-            build_packet(packet, build_message("input", "3"));
+            build_packet(packet, build_message(group_addr, "input", "3"));
             break;
 
           case KEY_BRIGHTNESS_VALUE_UP:
@@ -225,7 +232,7 @@ int main(int argc, char **argv) {
               brightness_value = 10;
 
             sprintf(buf, "%d", brightness_value);
-            build_packet(packet, build_message("brightness", buf));
+            build_packet(packet, build_message(group_addr, "brightness", buf));
             break;
 
           case KEY_BRIGHTNESS_VALUE_DOWN:
@@ -235,7 +242,7 @@ int main(int argc, char **argv) {
               brightness_value = 100;
 
             sprintf(buf, "%d", brightness_value);
-            build_packet(packet, build_message("brightness", buf));
+            build_packet(packet, build_message(group_addr, "brightness", buf));
             break;
 
           default:
