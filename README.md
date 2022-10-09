@@ -5,7 +5,7 @@ Dreamscreen protocol documentation is available [here](https://planet.neeo.com/m
 ## dreamscreen-cli
 Simple command line utility to send command.
 
-Usage: dreamscreen-cli -h [host or ip] -p [port] [COMMAND] [PARAMETER]
+Usage: dreamscreen-cli -h [host or ip] -p [port] -g [group address] [COMMAND] [PARAMETER]
 
 Command         | Parameter
 ---             |---
@@ -19,7 +19,7 @@ ambient_scene   | random_color, fireside, twinkle, ocean, rainbow, july4th, holy
 ## dreamscreend
 Controls Dreamscreen with keyboard event on Linux.
 
-Usage: dreamscreend -h [host or ip] -p [port] -d [device name]
+Usage: dreamscreend -h [host or ip] -p [port] -g [group address] -d [device name]
 
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
