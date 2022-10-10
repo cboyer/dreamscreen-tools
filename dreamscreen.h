@@ -129,6 +129,11 @@ void build_packet(unsigned char packet[], struct DS_message message) {
     packet[packet_len + 1] = crc8(packet);
 }
 
+void set_payload_uchar(struct DS_message *message, unsigned char payload) {
+    message->payload[0] = payload;
+    message->payload_len = 1;
+}
+
 struct DS_message build_message(char *group_addr, char *command, char *parameter) {
   struct DS_message message;
   message.command_upper = -1;
@@ -149,45 +154,31 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_MODE;
 
-    if(strcmp(parameter, "sleep") == 0) {
-      message.payload[0] = MODE_SLEEP;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "sleep") == 0)
+      set_payload_uchar(&message, MODE_SLEEP);
 
-    else if(strcmp(parameter, "video") == 0) {
-      message.payload[0] = MODE_VIDEO;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "video") == 0)
+      set_payload_uchar(&message, MODE_VIDEO);
 
-    else if(strcmp(parameter, "music") == 0) {
-      message.payload[0] = MODE_MUSIC;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "music") == 0) 
+      set_payload_uchar(&message, MODE_MUSIC);
 
-    else if(strcmp(parameter, "ambient") == 0) {
-      message.payload[0] = MODE_AMBIENT;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "ambient") == 0)
+      set_payload_uchar(&message, MODE_AMBIENT);
   }
 
   else if(strcmp(command, "input") == 0) {
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_INPUT;
 
-    if(strcmp(parameter, "1") == 0) {
-      message.payload[0] = INPUT_HDMI_1;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "1") == 0)
+      set_payload_uchar(&message, INPUT_HDMI_1);
 
-    else if(strcmp(parameter, "2") == 0) {
-      message.payload[0] = INPUT_HDMI_2;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "2") == 0)
+      set_payload_uchar(&message, INPUT_HDMI_2);
 
-    else if(strcmp(parameter, "3") == 0) {
-      message.payload[0] = INPUT_HDMI_3;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "3") == 0) 
+      set_payload_uchar(&message, INPUT_HDMI_3);
   }
 
   else if(strcmp(command, "brightness") == 0) {
@@ -207,65 +198,43 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_AMBIENT_MODE;
 
-    if(strcmp(parameter, "color") == 0) {
-      message.payload[0] = AMBIENT_MODE_COLOR;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "color") == 0)
+      set_payload_uchar(&message, AMBIENT_MODE_COLOR);
 
-    else if(strcmp(parameter, "scene") == 0) {
-      message.payload[0] = AMBIENT_MODE_SCENE;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "scene") == 0)
+      set_payload_uchar(&message, AMBIENT_MODE_SCENE);
   }
   
   else if(strcmp(command, "ambient_scene") == 0) {
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_AMBIENT_SCENE;
 
-    if(strcmp(parameter, "random_color") == 0) {
-      message.payload[0] = AMBIENT_SCENE_RANDOM;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "random_color") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_RANDOM);
 
-    else if(strcmp(parameter, "fireside") == 0) {
-      message.payload[0] = AMBIENT_SCENE_FIRESIDE;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "fireside") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_FIRESIDE);
     
-    else if(strcmp(parameter, "twinkle") == 0) {
-      message.payload[0] = AMBIENT_SCENE_TWINKLE;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "twinkle") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_TWINKLE);
     
-    else if(strcmp(parameter, "ocean") == 0) {
-      message.payload[0] = AMBIENT_SCENE_OCEAN;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "ocean") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_OCEAN);
     
-    else if(strcmp(parameter, "rainbow") == 0) {
-      message.payload[0] = AMBIENT_SCENE_RAINBOW;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "rainbow") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_RAINBOW);
     
-    else if(strcmp(parameter, "july4th") == 0) {
-      message.payload[0] = AMBIENT_SCENE_JULY4TH;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "july4th") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_JULY4TH);
     
-    else if(strcmp(parameter, "holyday") == 0) {
-      message.payload[0] = AMBIENT_SCENE_HOLYDAY;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "holyday") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_HOLYDAY);
     
-    else if(strcmp(parameter, "pop") == 0) {
-      message.payload[0] = AMBIENT_SCENE_POP;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "pop") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_POP);
     
-    else if(strcmp(parameter, "enchanted_forest") == 0) {
-      message.payload[0] = AMBIENT_SCENE_FOREST;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "enchanted_forest") == 0)
+      set_payload_uchar(&message, AMBIENT_SCENE_FOREST);
   }
 
   else if(strcmp(command, "ambient_color") == 0) {
@@ -322,20 +291,14 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_WIDESCREEN;
 
-    if(strcmp(parameter, "auto") == 0) {
-      message.payload[0] = WIDESCREEN_AUTO;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "auto") == 0)
+      set_payload_uchar(&message, WIDESCREEN_AUTO);
 
-    else if(strcmp(parameter, "on") == 0) {
-      message.payload[0] = WIDESCREEN_ON;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "on") == 0)
+      set_payload_uchar(&message, WIDESCREEN_ON);
 
-    else if(strcmp(parameter, "off") == 0) {
-      message.payload[0] = WIDESCREEN_OFF;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "off") == 0)
+      set_payload_uchar(&message, WIDESCREEN_OFF);
   }
 
   else if(strcmp(command, "fade_rate") == 0) {
@@ -380,27 +343,18 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     message.command_upper = UPPER_CMD;
     message.command_lower = CMD_COLOR_BOOST;
 
-    if(strcmp(parameter, "off") == 0) {
-      message.payload[0] = COLOR_BOOST_OFF;
-      message.payload_len = 1;
-    }
+    if(strcmp(parameter, "off") == 0)
+      set_payload_uchar(&message, COLOR_BOOST_OFF);
 
-    else if(strcmp(parameter, "low") == 0) {
-      message.payload[0] = COLOR_BOOST_LOW;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "low") == 0)
+      set_payload_uchar(&message, COLOR_BOOST_LOW);
 
-    else if(strcmp(parameter, "medium") == 0) {
-      message.payload[0] = COLOR_BOOST_MED;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "medium") == 0)
+      set_payload_uchar(&message, COLOR_BOOST_MED);
 
-    else if(strcmp(parameter, "high") == 0) {
-      message.payload[0] = COLOR_BOOST_HIGH;
-      message.payload_len = 1;
-    }
+    else if(strcmp(parameter, "high") == 0)
+      set_payload_uchar(&message, COLOR_BOOST_HIGH);
   }
-
 
   return message;
 }
