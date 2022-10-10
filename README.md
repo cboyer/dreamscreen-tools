@@ -7,14 +7,20 @@ Simple command line utility to send command.
 
 Usage: dreamscreen-cli -h [host or ip] -p [port] -g [group address] [COMMAND] [PARAMETER]
 
-Command         | Parameter
----             |---
-mode            | sleep, video, music, ambient
-input           | 1, 2, 3
-brightness      | integer value from 0 to 100
-ambient_mode    | color, scene
-ambient_color   | [0-255],[0-255],[0-255]
-ambient_scene   | random_color, fireside, twinkle, ocean, rainbow, july4th, holyday, pop, enchanted_forest
+Command             | Parameter
+---                 |---
+mode                | sleep, video, music, ambient
+input               | 1, 2, 3
+brightness          | integer value from 0 to 100
+ambient_mode        | color, scene
+ambient_color       | [0-255],[0-255],[0-255]
+ambient_scene       | random_color, fireside, twinkle, ocean, rainbow, july4th, holyday, pop, enchanted_forest
+saturation          | [0-255],[0-255],[0-255]
+widescreen          | auto, on, off
+fade_rate           | [0-50]
+minimum_luminosity  | [0-50],[0-50],[0-50]
+color_boost         | off, low, medium, high
+
 
 ## dreamscreend
 Controls Dreamscreen with keyboard event on Linux.

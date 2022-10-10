@@ -31,9 +31,19 @@ Available commands and parameters:\n\
   \t\t [0-100]\n\
   ambient_mode \t Ambient mode\n\
   \t\t [color, scene]\n\
-  ambient_color\t Ambient mode color RGB, comma separated\n\
+  ambient_color\t Ambient mode color, RGB format\n\
   \t\t [0-255],[0-255],[0-255]\n\
   ambient_scene\t Ambient mode scene\n\
   \t\t [random_color, fireside, twinkle, ocean, rainbow, july4th, holyday, pop, enchanted_forest]\n\
+  saturation \t Adjust the RGB channels to appear correctly or when wall behind Dreamscreen is not white, RGB format\n\
+  \t\t [0-255],[0-255],[0-255]\n\
+  widescreen \t Will detect when the HDMI source has formatted to fit a widescreen\n\
+  \t\t [auto, on, off]\n\
+  fade_rate \t Adjust the reaction speed of the LEDs\n\
+  \t\t [0-50]\n\
+  minimum_luminosity\t Set a low level of background light when there is no video content playing, RGB format\n\
+  \t\t [0-50],[0-50],[0-50]\n\
+  color_boost \t Enhances RGB tones making lighter hues appear stronger\n\
+  \t\t [off, low, medium, high]\n\
     \n\n");
 }

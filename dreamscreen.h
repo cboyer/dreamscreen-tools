@@ -58,6 +58,20 @@
 #define AMBIENT_SCENE_POP       0x07
 #define AMBIENT_SCENE_FOREST    0x08
 
+#define CMD_WIDESCREEN          0x2B
+#define WIDESCREEN_AUTO         0x00
+#define WIDESCREEN_ON           0x01
+#define WIDESCREEN_OFF          0x02
+
+#define CMD_SATURATION          0x06
+#define CMD_FADERATE            0x0E
+#define CMD_MIN_LUMINOSITY      0x0C
+
+#define CMD_COLOR_BOOST         0x2D
+#define COLOR_BOOST_OFF         0x00
+#define COLOR_BOOST_LOW         0x01
+#define COLOR_BOOST_MED         0x02
+#define COLOR_BOOST_HIGH        0x03
 
 
 
@@ -126,8 +140,8 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   unsigned long ret;
   ret = strtoul(group_addr, &p, 16);
 
-  if(ret > 0x255)
-    ret = 0x255;
+  if(ret > 0xFF)
+    ret = 0xFF;
 
   message.group_addr = ret;
 
@@ -266,8 +280,8 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     for(i = 0; i < 3 && p != NULL; i++) {
       ret = strtoul(p, &pp, 10);
 
-      if(ret > 0x255)
-        message.payload[i] = 0x255;
+      if(ret > 0xFF)
+        message.payload[i] = 0xFF;
       else
         message.payload[i] = ret;
 
@@ -278,6 +292,115 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     if(i != 3)
       message.payload[0] = -1;
   }
+
+  else if(strcmp(command, "saturation") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_SATURATION;
+
+    char *pp;
+    int i = 0;
+
+    p = strtok(parameter, DEFAULT_STRTOK_DELIM);
+
+    for(i = 0; i < 3 && p != NULL; i++) {
+      ret = strtoul(p, &pp, 10);
+
+      if(ret > 0xFF)
+        message.payload[i] = 0xFF;
+      else
+        message.payload[i] = ret;
+
+      p = strtok(NULL, DEFAULT_STRTOK_DELIM);
+      message.payload_len = i + 1;
+    }
+
+    if(i != 3)
+      message.payload[0] = -1;
+  }
+
+  else if(strcmp(command, "widescreen") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_WIDESCREEN;
+
+    if(strcmp(parameter, "auto") == 0) {
+      message.payload[0] = WIDESCREEN_AUTO;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "on") == 0) {
+      message.payload[0] = WIDESCREEN_ON;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "off") == 0) {
+      message.payload[0] = WIDESCREEN_OFF;
+      message.payload_len = 1;
+    }
+  }
+
+  else if(strcmp(command, "fade_rate") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_FADERATE;
+    ret = strtoul(parameter, &p, 10);
+
+    if(ret > 50)
+      message.payload[0] = 50;
+    else
+      message.payload[0] = ret;
+
+    message.payload_len = 1;
+  }
+
+  else if(strcmp(command, "minimum_luminosity") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_MIN_LUMINOSITY;
+
+    char *pp;
+    int i = 0;
+
+    p = strtok(parameter, DEFAULT_STRTOK_DELIM);
+
+    for(i = 0; i < 3 && p != NULL; i++) {
+      ret = strtoul(p, &pp, 10);
+
+      if(ret > 50)
+        message.payload[i] = 50;
+      else
+        message.payload[i] = ret;
+
+      p = strtok(NULL, DEFAULT_STRTOK_DELIM);
+      message.payload_len = i + 1;
+    }
+
+    if(i != 3)
+      message.payload[0] = -1;
+  }
+
+  else if(strcmp(command, "color_boost") == 0) {
+    message.command_upper = UPPER_CMD;
+    message.command_lower = CMD_COLOR_BOOST;
+
+    if(strcmp(parameter, "off") == 0) {
+      message.payload[0] = COLOR_BOOST_OFF;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "low") == 0) {
+      message.payload[0] = COLOR_BOOST_LOW;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "medium") == 0) {
+      message.payload[0] = COLOR_BOOST_MED;
+      message.payload_len = 1;
+    }
+
+    else if(strcmp(parameter, "high") == 0) {
+      message.payload[0] = COLOR_BOOST_HIGH;
+      message.payload_len = 1;
+    }
+  }
+
 
   return message;
 }
