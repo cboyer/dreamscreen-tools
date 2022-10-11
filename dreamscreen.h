@@ -129,6 +129,11 @@ void build_packet(unsigned char packet[], struct DS_message message) {
     packet[packet_len + 1] = crc8(packet);
 }
 
+void set_commands(struct DS_message *message, unsigned char upper_command, unsigned char lower_command) {
+  message->command_upper = upper_command;
+  message->command_lower = lower_command;
+}
+
 void set_payload_uchar(struct DS_message *message, unsigned char payload) {
     message->payload[0] = payload;
     message->payload_len = 1;
@@ -151,8 +156,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   message.group_addr = ret;
 
   if(strcmp(command, "mode") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_MODE;
+    set_commands(&message, UPPER_CMD, CMD_MODE);
 
     if(strcmp(parameter, "sleep") == 0)
       set_payload_uchar(&message, MODE_SLEEP);
@@ -168,8 +172,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "input") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_INPUT;
+    set_commands(&message, UPPER_CMD, CMD_INPUT);
 
     if(strcmp(parameter, "1") == 0)
       set_payload_uchar(&message, INPUT_HDMI_1);
@@ -182,8 +185,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "brightness") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_BRIGHTNESS;
+    set_commands(&message, UPPER_CMD, CMD_BRIGHTNESS);
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 100)
@@ -195,8 +197,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "ambient_mode") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_AMBIENT_MODE;
+    set_commands(&message, UPPER_CMD, CMD_AMBIENT_MODE);
 
     if(strcmp(parameter, "color") == 0)
       set_payload_uchar(&message, AMBIENT_MODE_COLOR);
@@ -206,8 +207,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
   
   else if(strcmp(command, "ambient_scene") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_AMBIENT_SCENE;
+    set_commands(&message, UPPER_CMD, CMD_AMBIENT_SCENE);
 
     if(strcmp(parameter, "random_color") == 0)
       set_payload_uchar(&message, AMBIENT_SCENE_RANDOM);
@@ -238,8 +238,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "ambient_color") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_AMBIENT_COLOR;
+    set_commands(&message, UPPER_CMD, CMD_AMBIENT_COLOR);
 
     char *pp;
     int i = 0;
@@ -263,8 +262,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "saturation") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_SATURATION;
+    set_commands(&message, UPPER_CMD, CMD_SATURATION);
 
     char *pp;
     int i = 0;
@@ -288,8 +286,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "widescreen") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_WIDESCREEN;
+    set_commands(&message, UPPER_CMD, CMD_WIDESCREEN);
 
     if(strcmp(parameter, "auto") == 0)
       set_payload_uchar(&message, WIDESCREEN_AUTO);
@@ -302,8 +299,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "fade_rate") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_FADERATE;
+    set_commands(&message, UPPER_CMD, CMD_FADERATE);
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 50)
@@ -315,8 +311,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "minimum_luminosity") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_MIN_LUMINOSITY;
+    set_commands(&message, UPPER_CMD, CMD_MIN_LUMINOSITY);
 
     char *pp;
     int i = 0;
@@ -340,8 +335,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   }
 
   else if(strcmp(command, "color_boost") == 0) {
-    message.command_upper = UPPER_CMD;
-    message.command_lower = CMD_COLOR_BOOST;
+    set_commands(&message, UPPER_CMD, CMD_COLOR_BOOST);
 
     if(strcmp(parameter, "off") == 0)
       set_payload_uchar(&message, COLOR_BOOST_OFF);
