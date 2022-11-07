@@ -3,7 +3,7 @@ CFLAGS=-Wall -Wextra -Werror -O2
 
 default: all
 debug: CFLAGS += -DDEBUG
-debug: dreamscreend dreamscreen-cli
+debug: all
 all: dreamscreen-cli dreamscreend
 cli: dreamscreen-cli
 
@@ -26,14 +26,27 @@ clean:
 	-rm -f dreamscreen-cli
 
 install:
+ifneq (,$(wildcard ./dreamscreend))
 	-install -m 755 dreamscreend /usr/local/bin/
-	-install -m 755 dreamscreen-cli /usr/local/bin/
 	-install -m 744 dreamscreend.service /usr/lib/systemd/system/
 	-systemctl daemon-reload
+endif
+
+ifneq (,$(wildcard ./dreamscreen-cli))
+	-install -m 755 dreamscreen-cli /usr/local/bin/
+endif
 
 uninstall:
+ifneq (,$(wildcard /usr/local/bin/dreamscreend))
 	-systemctl stop dreamscreend
 	-systemctl disable dreamscreend
 	-rm -f /usr/local/bin/dreamscreend
 	-rm -f /usr/lib/systemd/system/dreamscreend.service
 	-systemctl daemon-reload
+endif
+
+ifneq (,$(wildcard /usr/local/bin/dreamscreen-cli))
+	-rm -f /usr/local/bin/dreamscreen-cli
+endif
+
+	
