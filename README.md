@@ -20,6 +20,9 @@ widescreen          | auto, on, off
 fade_rate           | [0-50]
 minimum_luminosity  | [0-50],[0-50],[0-50]
 color_boost         | off, low, medium, high
+music_visualizer    | 1, 2, 3, 4
+music_color         | [r, g, b],[r, g, b],[r, g, b]
+music_brightness    | [0-100],[0-100],[0-100]
 
 
 ## dreamscreend
