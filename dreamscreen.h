@@ -73,6 +73,20 @@
 #define COLOR_BOOST_MED         0x02
 #define COLOR_BOOST_HIGH        0x03
 
+#define CMD_MUSIC_VISUALIZER    0x09
+#define MUSIC_VISUALIZER_1      0x00
+#define MUSIC_VISUALIZER_2      0x01
+#define MUSIC_VISUALIZER_3      0x02
+#define MUSIC_VISUALIZER_4      0x03
+
+#define CMD_MUSIC_COLOR         0x0A
+#define MUSIC_COLOR_RED         0x00
+#define MUSIC_COLOR_GREEN       0x01
+#define MUSIC_COLOR_BLUE        0x02
+
+#define CMD_MUSIC_BRIGHTNESS    0x0B
+
+
 
 
 struct DS_message {
@@ -138,6 +152,13 @@ void set_payload_uchar(struct DS_message *message, unsigned char payload) {
     message->payload[0] = payload;
     message->payload_len = 1;
 }
+
+/*
+void set_payload_arr(struct DS_message *message, char *payload, int length) {
+    memcpy(message->payload, payload, length);
+    message->payload_len = length;
+}
+*/
 
 struct DS_message build_message(char *group_addr, char *command, char *parameter) {
   struct DS_message message;
@@ -348,6 +369,71 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
 
     else if(strcmp(parameter, "high") == 0)
       set_payload_uchar(&message, COLOR_BOOST_HIGH);
+  }
+
+  else if(strcmp(command, "music_visualizer") == 0) {
+    set_commands(&message, UPPER_CMD, CMD_MUSIC_VISUALIZER);
+
+    if(strcmp(parameter, "1") == 0)
+      set_payload_uchar(&message, MUSIC_VISUALIZER_1);
+
+    else if(strcmp(parameter, "2") == 0)
+      set_payload_uchar(&message, MUSIC_VISUALIZER_2);
+
+    else if(strcmp(parameter, "3") == 0)
+      set_payload_uchar(&message, MUSIC_VISUALIZER_3);
+
+    else if(strcmp(parameter, "4") == 0)
+      set_payload_uchar(&message, MUSIC_VISUALIZER_4);
+  }
+
+  else if(strcmp(command, "music_color") == 0) {
+    set_commands(&message, UPPER_CMD, CMD_MUSIC_COLOR);
+    int i = 0;
+    p = strtok(parameter, DEFAULT_STRTOK_DELIM);
+
+    for(i = 0; i < 3 && p != NULL; i++) {
+
+      if(p[0] == 'r')
+        message.payload[i] = MUSIC_COLOR_RED;
+
+      else if(p[0] == 'g')
+        message.payload[i] = MUSIC_COLOR_GREEN;
+
+      else if(p[0] == 'b')
+        message.payload[i] = MUSIC_COLOR_BLUE;
+
+      else message.payload[0] = -1;
+
+      p = strtok(NULL, DEFAULT_STRTOK_DELIM);
+      message.payload_len = i + 1;
+    }
+
+    if(i != 3)
+      message.payload[0] = -1;
+  }
+
+  else if(strcmp(command, "music_brightness") == 0) {
+    set_commands(&message, UPPER_CMD, CMD_MUSIC_BRIGHTNESS);
+    char *pp;
+    int i = 0;
+
+    p = strtok(parameter, DEFAULT_STRTOK_DELIM);
+
+    for(i = 0; i < 3 && p != NULL; i++) {
+      ret = strtoul(p, &pp, 10);
+
+      if(ret > 100)
+        message.payload[i] = 100;
+      else
+        message.payload[i] = ret;
+
+      p = strtok(NULL, DEFAULT_STRTOK_DELIM);
+      message.payload_len = i + 1;
+    }
+
+    if(i != 3)
+      message.payload[0] = -1;
   }
 
   return message;

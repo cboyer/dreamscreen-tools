@@ -45,5 +45,11 @@ Available commands and parameters:\n\
   \t\t [0-50],[0-50],[0-50]\n\
   color_boost \t Enhances RGB tones making lighter hues appear stronger\n\
   \t\t [off, low, medium, high]\n\
+  music_visualizer \t Music visualizer style\n\
+  \t\t [1, 2, 3, 4]\n\
+  music_color \t Music color (red, green or blue) for treble, middle and bass\n\
+  \t\t [r, g, b],[r, g, b],[r, g, b]\n\
+  music_brightness \t Brightness level for treble, middle and bass\n\
+  \t\t [0-100],[0-100],[0-100]\n\
     \n\n");
 }
