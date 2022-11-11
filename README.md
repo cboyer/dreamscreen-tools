@@ -1,9 +1,8 @@
-Tools to control a Dreamscreen device from Linux.
+Tools for controlling Dreamscreen device.
 
 Dreamscreen protocol documentation is available [here](https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf).
 
 ## dreamscreen-cli
-Simple command line utility to send command.
 
 Usage: dreamscreen-cli -h [host or ip] -p [port] -g [group address] [COMMAND] [PARAMETER]
 
@@ -11,7 +10,7 @@ Command             | Parameter
 ---                 |---
 mode                | sleep, video, music, ambient
 input               | 1, 2, 3
-brightness          | integer value from 0 to 100
+brightness          | [0-100]
 ambient_mode        | color, scene
 ambient_color       | [0-255],[0-255],[0-255]
 ambient_scene       | random_color, fireside, twinkle, ocean, rainbow, july4th, holyday, pop, enchanted_forest
@@ -26,9 +25,15 @@ music_brightness    | [0-100],[0-100],[0-100]
 
 
 ## dreamscreend
-Controls Dreamscreen with keyboard event on Linux.
+Dreamscreen control from keyboard event (Linux only).
 
 Usage: dreamscreend -h [host or ip] -p [port] -g [group address] -d [device name]
+
+User account should be in the *input* group to open /dev/input/eventX and to avoid *ERROR: cannot open /dev/input/eventX: Permission denied.*
+
+```bash
+sudo usermod -a -G input kodi
+```
 
 A key combination is used in order to avoid unwanted interaction with Kodi and other application.
 
@@ -49,13 +54,6 @@ KEY_BRIGHTNESS_VALUE_DOWN | 9 | Set brightness - 10%
 
 For example to activate video mode, use: *Left ALT + 2*
 
-
-## Prerequisites
-User account should be in the *input* group to open /dev/input/eventX and to avoid *ERROR: cannot open /dev/input/eventX: Permission denied.*
-
-```bash
-sudo usermod -a -G input kodi
-```
 
 ## Compilation
 Clone this repository and code compilation:
