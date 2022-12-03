@@ -1,10 +1,19 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -Werror -O2
+CFLAGS = -Wall -Wextra -Werror -O2
+OS = $(shell uname)
+ALLTARGETS = dreamscreen-cli
 
-default: all
+ifeq ($(OS),Linux)
+	CC = gcc
+	ALLTARGETS += dreamscreend
+endif
+
+ifeq ($(OS),FreeBSD)
+	CC = clang
+endif
+
+all: $(ALLTARGETS)
 debug: CFLAGS += -DDEBUG
 debug: all
-all: dreamscreen-cli dreamscreend
 cli: dreamscreen-cli
 
 dreamscreen-cli.o: dreamscreen-cli.c
@@ -20,33 +29,15 @@ dreamscreend: dreamscreend.o
 	$(CC) $(CFLAGS) dreamscreend.o -o dreamscreend
 
 clean:
-	-rm -f dreamscreend.o
-	-rm -f dreamscreend
-	-rm -f dreamscreen-cli.o
-	-rm -f dreamscreen-cli
+	$(RM) *.o dreamscreend dreamscreen-cli
 
 install:
-ifneq (,$(wildcard ./dreamscreend))
-	-install -m 755 dreamscreend /usr/local/bin/
-	-install -m 744 dreamscreend.service /usr/lib/systemd/system/
-	-systemctl daemon-reload
-endif
-
-ifneq (,$(wildcard ./dreamscreen-cli))
-	-install -m 755 dreamscreen-cli /usr/local/bin/
-endif
+	install -m 755 dreamscreen-cli /usr/local/bin/
+	if test -f dreamscreend ; then install -m 755 dreamscreend /usr/local/bin/ ; fi
+	if test -f dreamscreend ; then install -m 744 dreamscreend.service /usr/lib/systemd/system/ ; fi
+	if test -f dreamscreend ; then systemctl daemon-reload ; fi
 
 uninstall:
-ifneq (,$(wildcard /usr/local/bin/dreamscreend))
-	-systemctl stop dreamscreend
-	-systemctl disable dreamscreend
-	-rm -f /usr/local/bin/dreamscreend
-	-rm -f /usr/lib/systemd/system/dreamscreend.service
-	-systemctl daemon-reload
-endif
+	if test -f /usr/lib/systemd/system/dreamscreend.service ; then systemctl stop dreamscreend && systemctl disable dreamscreend && $(RM) /usr/lib/systemd/system/dreamscreend.service && systemctl daemon-reload ; fi
+	$(RM) /usr/local/bin/dreamscreen-cli /usr/local/bin/dreamscreend
 
-ifneq (,$(wildcard /usr/local/bin/dreamscreen-cli))
-	-rm -f /usr/local/bin/dreamscreen-cli
-endif
-
-	
