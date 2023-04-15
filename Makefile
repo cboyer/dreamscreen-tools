@@ -1,20 +1,26 @@
 CFLAGS = -Wall -Wextra -Werror -O2
 OS = $(shell uname)
-ALLTARGETS = dreamscreen-cli
+ALLTARGETS = dreamscreen-cli dreamscreend
+
+ifdef DEBUG
+	CFLAGS := $(CFLAGS) -DDEBUG
+endif
 
 ifeq ($(OS),Linux)
 	CC = gcc
-	ALLTARGETS += dreamscreend
 endif
 
 ifeq ($(OS),FreeBSD)
 	CC = clang
+	ALLTARGETS = dreamscreen-cli
 endif
 
-all: $(ALLTARGETS)
-debug: CFLAGS += -DDEBUG
-debug: all
+.PHONY: all clean install uninstall
+.INTERMEDIATE: dreamscreen-cli.o dreamscreend.o
+
+all: clean $(ALLTARGETS)
 cli: dreamscreen-cli
+daemon: dreamscreend
 
 dreamscreen-cli.o: dreamscreen-cli.c
 	$(CC) $(CFLAGS) -c dreamscreen-cli.c -o dreamscreen-cli.o

@@ -63,8 +63,8 @@ cd dreamscreen-tools
 make all
 ```
 
-Alternatively, you can compile code with `make debug` to print key events and UDP packet content.
-Compile only one tool with `make cli` for dreamscreen-cli and `make dreamscreend` for dreamscreend.
+Alternatively, you can compile code with `make DEBUG=1` to print key events and UDP packet content.
+Compile only one tool with `make cli` for dreamscreen-cli and `make daemon` for dreamscreend.
 
 ## Installation
 Edit *dreamscreend.service* to your needs (user account, device name).
