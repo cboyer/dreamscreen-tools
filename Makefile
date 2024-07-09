@@ -1,6 +1,7 @@
-CFLAGS = -Wall -Wextra -Werror -O2
+CFLAGS = -Wall -Wextra -Werror -O2 -I./lib
 OS = $(shell uname)
-ALLTARGETS = dreamscreen-cli dreamscreend
+BUILD_DIR = build
+ALL_TARGETS = dreamscreen-cli dreamscreend
 
 ifdef DEBUG
 	CFLAGS := $(CFLAGS) -DDEBUG
@@ -12,36 +13,32 @@ endif
 
 ifeq ($(OS),FreeBSD)
 	CC = clang
-	ALLTARGETS = dreamscreen-cli
+	ALL_TARGETS = dreamscreen-cli
 endif
 
-.PHONY: all clean install uninstall
-.INTERMEDIATE: dreamscreen-cli.o dreamscreend.o
+.PHONY: all clean install uninstall cli daemon
 
-all: clean $(ALLTARGETS)
+all: $(ALL_TARGETS)
 cli: dreamscreen-cli
 daemon: dreamscreend
 
-dreamscreen-cli.o: dreamscreen-cli.c
-	$(CC) $(CFLAGS) -c dreamscreen-cli.c -o dreamscreen-cli.o
+build:
+	@mkdir -p $(BUILD_DIR)
 
-dreamscreen-cli: dreamscreen-cli.o
-	$(CC) $(CFLAGS) dreamscreen-cli.o -o dreamscreen-cli
+%: dreamscreen-cli/%.c build
+	$(CC) $(CFLAGS) $< -o $(BUILD_DIR)/$@
 
-dreamscreend.o: dreamscreend.c
-	$(CC) $(CFLAGS) -c dreamscreend.c -o dreamscreend.o
-
-dreamscreend: dreamscreend.o
-	$(CC) $(CFLAGS) dreamscreend.o -o dreamscreend
+%: dreamscreend/%.c build
+	$(CC) $(CFLAGS) $< -o $(BUILD_DIR)/$@
 
 clean:
-	$(RM) *.o dreamscreend dreamscreen-cli
+	$(RM) -r $(BUILD_DIR)
 
 install:
-	install -m 755 dreamscreen-cli /usr/local/bin/
-	if test -f dreamscreend ; then install -m 755 dreamscreend /usr/local/bin/ ; fi
-	if test -f dreamscreend ; then install -m 744 dreamscreend.service /usr/lib/systemd/system/ ; fi
-	if test -f dreamscreend ; then systemctl daemon-reload ; fi
+	install -m 755 $(BUILD_DIR)/dreamscreen-cli /usr/local/bin/
+	if test -f $(BUILD_DIR)/dreamscreend ; then install -m 755 $(BUILD_DIR)/dreamscreend /usr/local/bin/ ; fi
+	if test -f $(BUILD_DIR)/dreamscreend ; then install -m 744 $(BUILD_DIR)/dreamscreend.service /usr/lib/systemd/system/ ; fi
+	if test -f $(BUILD_DIR)/dreamscreend ; then systemctl daemon-reload ; fi
 
 uninstall:
 	if test -f /usr/lib/systemd/system/dreamscreend.service ; then systemctl stop dreamscreend && systemctl disable dreamscreend && $(RM) /usr/lib/systemd/system/dreamscreend.service && systemctl daemon-reload ; fi
