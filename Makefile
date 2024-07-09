@@ -18,18 +18,18 @@ endif
 
 .PHONY: all clean install uninstall cli daemon
 
-all: $(ALL_TARGETS)
-cli: dreamscreen-cli
-daemon: dreamscreend
+all: build $(addprefix $(BUILD_DIR)/,$(ALL_TARGETS))
+cli: build dreamscreen-cli
+daemon: build dreamscreend
 
 build:
 	@mkdir -p $(BUILD_DIR)
 
-%: dreamscreen-cli/%.c build
-	$(CC) $(CFLAGS) $< -o $(BUILD_DIR)/$@
+$(BUILD_DIR)/%: dreamscreen-cli/%.c
+	$(CC) $(CFLAGS) $< -o $@
 
-%: dreamscreend/%.c build
-	$(CC) $(CFLAGS) $< -o $(BUILD_DIR)/$@
+$(BUILD_DIR)/%: dreamscreend/%.c
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	$(RM) -r $(BUILD_DIR)
