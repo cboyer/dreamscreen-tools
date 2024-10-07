@@ -1,5 +1,5 @@
 /* dreamscreen.h
- * Dreamscreen protocol hex values and common functions.
+ * Dreamscreen protocol common functions.
  * Copyright (C) 2022 C. Boyer
  *
  * This program is free software: you can redistribute it and/or modify  
@@ -15,77 +15,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define MAX_PACKET_LEN          18
-#define MAX_PAYLOAD_LEN         MAX_PACKET_LEN - 7
-#define DEFAULT_PORT            "8888"
-#define DEFAULT_GROUP_ADDR      "0x00"
+#include "dreamscreen_hex.h"
+
 #define DEFAULT_STRTOK_DELIM    ","
-
-/* Protocol documentation: https://planet.neeo.com/media/80x1kj/download/dreamscreen-v2-wifi-udp-protocol.pdf */
-#define PACKET_START            0xFC
-#define FLAG                    0x11
-#define UPPER_CMD               0x03
-
-#define CMD_MODE                0x01
-#define MODE_SLEEP              0x00
-#define MODE_VIDEO              0x01
-#define MODE_MUSIC              0x02
-#define MODE_AMBIENT            0x03
-
-#define CMD_INPUT               0x20
-#define INPUT_HDMI_1            0x00
-#define INPUT_HDMI_2            0x01
-#define INPUT_HDMI_3            0x02
-
-#define CMD_BRIGHTNESS          0x02
-#define DEFAULT_BRIGHTNESS      0x32
-
-#define CMD_AMBIENT_MODE        0x08
-#define AMBIENT_MODE_COLOR      0x01
-#define AMBIENT_MODE_SCENE      0x02
-
-#define CMD_AMBIENT_COLOR       0x05
-#define DEFAULT_AMBIENT_COLOR   "\x09\x09\x09"
-
-#define CMD_AMBIENT_SCENE       0x0D
-#define AMBIENT_SCENE_RANDOM    0x00
-#define AMBIENT_SCENE_FIRESIDE  0x01
-#define AMBIENT_SCENE_TWINKLE   0x02
-#define AMBIENT_SCENE_OCEAN     0x03
-#define AMBIENT_SCENE_RAINBOW   0x04
-#define AMBIENT_SCENE_JULY4TH   0x05
-#define AMBIENT_SCENE_HOLYDAY   0x06
-#define AMBIENT_SCENE_POP       0x07
-#define AMBIENT_SCENE_FOREST    0x08
-
-#define CMD_WIDESCREEN          0x2B
-#define WIDESCREEN_AUTO         0x00
-#define WIDESCREEN_ON           0x01
-#define WIDESCREEN_OFF          0x02
-
-#define CMD_SATURATION          0x06
-#define CMD_FADERATE            0x0E
-#define CMD_MIN_LUMINOSITY      0x0C
-
-#define CMD_COLOR_BOOST         0x2D
-#define COLOR_BOOST_OFF         0x00
-#define COLOR_BOOST_LOW         0x01
-#define COLOR_BOOST_MED         0x02
-#define COLOR_BOOST_HIGH        0x03
-
-#define CMD_MUSIC_VISUALIZER    0x09
-#define MUSIC_VISUALIZER_1      0x00
-#define MUSIC_VISUALIZER_2      0x01
-#define MUSIC_VISUALIZER_3      0x02
-#define MUSIC_VISUALIZER_4      0x03
-
-#define CMD_MUSIC_COLOR         0x0A
-#define MUSIC_COLOR_RED         0x00
-#define MUSIC_COLOR_GREEN       0x01
-#define MUSIC_COLOR_BLUE        0x02
-
-#define CMD_MUSIC_BRIGHTNESS    0x0B
-
 
 
 
@@ -96,6 +28,53 @@ struct DS_message {
   int payload[MAX_PAYLOAD_LEN];
   int payload_len;
 };
+
+struct Args {
+    char command[30];
+    unsigned char command_hex;
+    char parameter[30];
+    unsigned char parameter_hex;
+};
+
+struct Args hex_index[] = {
+  { "mode", CMD_MODE, "sleep", MODE_SLEEP },
+  { "mode", CMD_MODE, "video", MODE_VIDEO },
+  { "mode", CMD_MODE, "music", MODE_MUSIC },
+  { "mode", CMD_MODE, "ambient", MODE_AMBIENT },
+  { "input", CMD_INPUT, "1", INPUT_HDMI_1 },
+  { "input", CMD_INPUT, "2", INPUT_HDMI_2 },
+  { "input", CMD_INPUT, "3", INPUT_HDMI_3 },
+  { "brightness", CMD_BRIGHTNESS, {'\0'}, 0 },
+  { "ambient_mode", CMD_AMBIENT_MODE, "color", AMBIENT_MODE_COLOR },
+  { "ambient_mode", CMD_AMBIENT_MODE, "scene", AMBIENT_MODE_SCENE },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "random_color", AMBIENT_SCENE_RANDOM },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "fireside", AMBIENT_SCENE_FIRESIDE },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "twinkle", AMBIENT_SCENE_TWINKLE },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "ocean", AMBIENT_SCENE_OCEAN },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "rainbow", AMBIENT_SCENE_RAINBOW },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "july4th", AMBIENT_SCENE_JULY4TH },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "holyday", AMBIENT_SCENE_HOLYDAY },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "pop", AMBIENT_SCENE_POP },
+  { "ambient_scene", CMD_AMBIENT_SCENE, "enchanted_forest", AMBIENT_SCENE_FOREST },
+  { "ambient_color", CMD_AMBIENT_COLOR, {'\0'}, 0 },
+  { "saturation", CMD_SATURATION, {'\0'}, 0 },
+  { "widescreen", CMD_WIDESCREEN, "auto", WIDESCREEN_AUTO },
+  { "widescreen", CMD_WIDESCREEN, "on", WIDESCREEN_ON },
+  { "widescreen", CMD_WIDESCREEN, "off", WIDESCREEN_OFF },
+  { "fade_rate", CMD_FADERATE, {'\0'}, 0 },
+  { "minimum_luminosity", CMD_MIN_LUMINOSITY, {'\0'}, 0 },
+  { "color_boost", CMD_COLOR_BOOST, "off", COLOR_BOOST_OFF },
+  { "color_boost", CMD_COLOR_BOOST, "low", COLOR_BOOST_LOW },
+  { "color_boost", CMD_COLOR_BOOST, "medium", COLOR_BOOST_MED },
+  { "color_boost", CMD_COLOR_BOOST, "high", COLOR_BOOST_HIGH },
+  { "music_visualizer", CMD_MUSIC_VISUALIZER, "1", MUSIC_VISUALIZER_1 },
+  { "music_visualizer", CMD_MUSIC_VISUALIZER, "2", MUSIC_VISUALIZER_2 },
+  { "music_visualizer", CMD_MUSIC_VISUALIZER, "3", MUSIC_VISUALIZER_3 },
+  { "music_visualizer", CMD_MUSIC_VISUALIZER, "4", MUSIC_VISUALIZER_4 },
+  { "music_color", CMD_MUSIC_COLOR, {'\0'}, 0 },
+  { "music_brightness", CMD_MUSIC_BRIGHTNESS, {'\0'}, 0 },
+};
+
 
 unsigned char crc8(unsigned char *packet) {
     unsigned char crc_table[] =  {
@@ -148,9 +127,15 @@ void set_commands(struct DS_message *message, unsigned char upper_command, unsig
   message->command_lower = lower_command;
 }
 
-void set_payload_uchar(struct DS_message *message, unsigned char payload) {
-    message->payload[0] = payload;
-    message->payload_len = 1;
+void add_payload_uchar(struct DS_message *message, unsigned char payload) {
+    if(message->payload_len < 0) {
+      message->payload[0] = payload;
+      message->payload_len = 1;
+    }
+    else {
+      message->payload[message->payload_len] = payload;
+      message->payload_len++;
+    }
 }
 
 /*
@@ -176,263 +161,130 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
 
   message.group_addr = ret;
 
-  if(strcmp(command, "mode") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_MODE);
+  for(size_t i = 0; i < sizeof hex_index / sizeof hex_index[0]; i++) {
+    if(strcmp(hex_index[i].command, command) == 0)
+      set_commands(&message, UPPER_CMD, hex_index[i].command_hex);
 
-    if(strcmp(parameter, "sleep") == 0)
-      set_payload_uchar(&message, MODE_SLEEP);
-
-    else if(strcmp(parameter, "video") == 0)
-      set_payload_uchar(&message, MODE_VIDEO);
-
-    else if(strcmp(parameter, "music") == 0) 
-      set_payload_uchar(&message, MODE_MUSIC);
-
-    else if(strcmp(parameter, "ambient") == 0)
-      set_payload_uchar(&message, MODE_AMBIENT);
+    if(strcmp(hex_index[i].command, command) == 0 && strcmp(hex_index[i].parameter, parameter) == 0) {
+      add_payload_uchar(&message, hex_index[i].parameter_hex);
+      return message;
+    }
   }
 
-  else if(strcmp(command, "input") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_INPUT);
 
-    if(strcmp(parameter, "1") == 0)
-      set_payload_uchar(&message, INPUT_HDMI_1);
-
-    else if(strcmp(parameter, "2") == 0)
-      set_payload_uchar(&message, INPUT_HDMI_2);
-
-    else if(strcmp(parameter, "3") == 0) 
-      set_payload_uchar(&message, INPUT_HDMI_3);
-  }
-
-  else if(strcmp(command, "brightness") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_BRIGHTNESS);
+  if(strcmp(command, "brightness") == 0) {
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 100)
-      message.payload[0] = 100;
+      add_payload_uchar(&message, 100);
     else
-      message.payload[0] = ret;
-
-    message.payload_len = 1;
-  }
-
-  else if(strcmp(command, "ambient_mode") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_AMBIENT_MODE);
-
-    if(strcmp(parameter, "color") == 0)
-      set_payload_uchar(&message, AMBIENT_MODE_COLOR);
-
-    else if(strcmp(parameter, "scene") == 0)
-      set_payload_uchar(&message, AMBIENT_MODE_SCENE);
-  }
-  
-  else if(strcmp(command, "ambient_scene") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_AMBIENT_SCENE);
-
-    if(strcmp(parameter, "random_color") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_RANDOM);
-
-    else if(strcmp(parameter, "fireside") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_FIRESIDE);
-    
-    else if(strcmp(parameter, "twinkle") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_TWINKLE);
-    
-    else if(strcmp(parameter, "ocean") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_OCEAN);
-    
-    else if(strcmp(parameter, "rainbow") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_RAINBOW);
-    
-    else if(strcmp(parameter, "july4th") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_JULY4TH);
-    
-    else if(strcmp(parameter, "holyday") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_HOLYDAY);
-    
-    else if(strcmp(parameter, "pop") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_POP);
-    
-    else if(strcmp(parameter, "enchanted_forest") == 0)
-      set_payload_uchar(&message, AMBIENT_SCENE_FOREST);
+      add_payload_uchar(&message, ret);
   }
 
   else if(strcmp(command, "ambient_color") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_AMBIENT_COLOR);
-
     char *pp;
-    int i = 0;
-
     p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
-    for(i = 0; i < 3 && p != NULL; i++) {
+    for(int i = 0; i < 3 && p != NULL; i++) {
       ret = strtoul(p, &pp, 10);
 
       if(ret > 0xFF)
-        message.payload[i] = 0xFF;
+        add_payload_uchar(&message, 0xFF);
       else
-        message.payload[i] = ret;
+        add_payload_uchar(&message, ret);
 
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
-      message.payload_len = i + 1;
     }
 
-    if(i != 3)
+    if(message.payload_len != 3)
       message.payload[0] = -1;
   }
 
   else if(strcmp(command, "saturation") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_SATURATION);
-
     char *pp;
-    int i = 0;
-
     p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
-    for(i = 0; i < 3 && p != NULL; i++) {
+    for(int i = 0; i < 3 && p != NULL; i++) {
       ret = strtoul(p, &pp, 10);
 
       if(ret > 0xFF)
-        message.payload[i] = 0xFF;
+        add_payload_uchar(&message, 0xFF);
       else
-        message.payload[i] = ret;
+        add_payload_uchar(&message, ret);
 
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
-      message.payload_len = i + 1;
     }
 
-    if(i != 3)
+    if(message.payload_len != 3)
       message.payload[0] = -1;
-  }
-
-  else if(strcmp(command, "widescreen") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_WIDESCREEN);
-
-    if(strcmp(parameter, "auto") == 0)
-      set_payload_uchar(&message, WIDESCREEN_AUTO);
-
-    else if(strcmp(parameter, "on") == 0)
-      set_payload_uchar(&message, WIDESCREEN_ON);
-
-    else if(strcmp(parameter, "off") == 0)
-      set_payload_uchar(&message, WIDESCREEN_OFF);
   }
 
   else if(strcmp(command, "fade_rate") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_FADERATE);
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 50)
-      message.payload[0] = 50;
+      add_payload_uchar(&message, 50);
     else
-      message.payload[0] = ret;
-
-    message.payload_len = 1;
+      add_payload_uchar(&message, ret);
   }
 
   else if(strcmp(command, "minimum_luminosity") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_MIN_LUMINOSITY);
-
     char *pp;
-    int i = 0;
-
     p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
-    for(i = 0; i < 3 && p != NULL; i++) {
+    for(int i = 0; i < 3 && p != NULL; i++) {
       ret = strtoul(p, &pp, 10);
 
       if(ret > 50)
-        message.payload[i] = 50;
+        add_payload_uchar(&message, 50);
       else
-        message.payload[i] = ret;
+        add_payload_uchar(&message, ret);
 
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
       message.payload_len = i + 1;
     }
 
-    if(i != 3)
+    if(message.payload_len != 3)
       message.payload[0] = -1;
   }
 
-  else if(strcmp(command, "color_boost") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_COLOR_BOOST);
-
-    if(strcmp(parameter, "off") == 0)
-      set_payload_uchar(&message, COLOR_BOOST_OFF);
-
-    else if(strcmp(parameter, "low") == 0)
-      set_payload_uchar(&message, COLOR_BOOST_LOW);
-
-    else if(strcmp(parameter, "medium") == 0)
-      set_payload_uchar(&message, COLOR_BOOST_MED);
-
-    else if(strcmp(parameter, "high") == 0)
-      set_payload_uchar(&message, COLOR_BOOST_HIGH);
-  }
-
-  else if(strcmp(command, "music_visualizer") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_MUSIC_VISUALIZER);
-
-    if(strcmp(parameter, "1") == 0)
-      set_payload_uchar(&message, MUSIC_VISUALIZER_1);
-
-    else if(strcmp(parameter, "2") == 0)
-      set_payload_uchar(&message, MUSIC_VISUALIZER_2);
-
-    else if(strcmp(parameter, "3") == 0)
-      set_payload_uchar(&message, MUSIC_VISUALIZER_3);
-
-    else if(strcmp(parameter, "4") == 0)
-      set_payload_uchar(&message, MUSIC_VISUALIZER_4);
-  }
-
   else if(strcmp(command, "music_color") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_MUSIC_COLOR);
-    int i = 0;
     p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
-    for(i = 0; i < 3 && p != NULL; i++) {
+    for(int i = 0; i < 3 && p != NULL; i++) {
 
       if(p[0] == 'r')
-        message.payload[i] = MUSIC_COLOR_RED;
+        add_payload_uchar(&message, MUSIC_COLOR_RED);
 
       else if(p[0] == 'g')
-        message.payload[i] = MUSIC_COLOR_GREEN;
+        add_payload_uchar(&message, MUSIC_COLOR_GREEN);
 
       else if(p[0] == 'b')
-        message.payload[i] = MUSIC_COLOR_BLUE;
-
-      else message.payload[0] = -1;
+        add_payload_uchar(&message, MUSIC_COLOR_BLUE);
 
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
-      message.payload_len = i + 1;
     }
 
-    if(i != 3)
+    if(message.payload_len != 3)
       message.payload[0] = -1;
   }
 
   else if(strcmp(command, "music_brightness") == 0) {
-    set_commands(&message, UPPER_CMD, CMD_MUSIC_BRIGHTNESS);
     char *pp;
-    int i = 0;
-
     p = strtok(parameter, DEFAULT_STRTOK_DELIM);
 
-    for(i = 0; i < 3 && p != NULL; i++) {
+    for(int i = 0; i < 3 && p != NULL; i++) {
       ret = strtoul(p, &pp, 10);
 
       if(ret > 100)
-        message.payload[i] = 100;
+        add_payload_uchar(&message, 100);
       else
-        message.payload[i] = ret;
+        add_payload_uchar(&message, ret);
 
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
-      message.payload_len = i + 1;
     }
 
-    if(i != 3)
+    if(message.payload_len != 3)
       message.payload[0] = -1;
   }
 
