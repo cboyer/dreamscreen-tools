@@ -138,6 +138,11 @@ void add_payload_uchar(struct DS_message *message, unsigned char payload) {
     }
 }
 
+void reset_payload(struct DS_message *message) {
+  message->payload[0] = -1;
+  message->payload_len = -1;
+}
+
 /*
 void set_payload_arr(struct DS_message *message, char *payload, int length) {
     memcpy(message->payload, payload, length);
@@ -149,8 +154,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
   struct DS_message message;
   message.command_upper = -1;
   message.command_lower = -1;
-  message.payload[0] = -1;
-  message.payload_len = -1;
+  reset_payload(&message);
 
   char *p;
   unsigned long ret;
@@ -197,7 +201,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
 
     if(message.payload_len != 3)
-      message.payload[0] = -1;
+      reset_payload(&message);
   }
 
   else if(strcmp(command, "saturation") == 0) {
@@ -216,7 +220,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
 
     if(message.payload_len != 3)
-      message.payload[0] = -1;
+      reset_payload(&message);
   }
 
   else if(strcmp(command, "fade_rate") == 0) {
@@ -245,7 +249,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
 
     if(message.payload_len != 3)
-      message.payload[0] = -1;
+      reset_payload(&message);
   }
 
   else if(strcmp(command, "music_color") == 0) {
@@ -266,7 +270,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
 
     if(message.payload_len != 3)
-      message.payload[0] = -1;
+      reset_payload(&message);
   }
 
   else if(strcmp(command, "music_brightness") == 0) {
@@ -285,7 +289,7 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
 
     if(message.payload_len != 3)
-      message.payload[0] = -1;
+      reset_payload(&message);
   }
 
   return message;
