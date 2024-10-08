@@ -17,9 +17,7 @@
 
 #include "dreamscreen_hex.h"
 
-#define DEFAULT_STRTOK_DELIM    ","
-
-
+#define DEFAULT_STRTOK_DELIM ","
 
 struct DS_message {
   int group_addr;
@@ -74,7 +72,6 @@ struct Args hex_index[] = {
   { "music_color", CMD_MUSIC_COLOR, {'\0'}, 0 },
   { "music_brightness", CMD_MUSIC_BRIGHTNESS, {'\0'}, 0 },
 };
-
 
 unsigned char crc8(unsigned char *packet) {
     unsigned char crc_table[] =  {
@@ -175,14 +172,13 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     }
   }
 
-
   if(strcmp(command, "brightness") == 0) {
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 100)
-      add_payload_uchar(&message, 100);
-    else
-      add_payload_uchar(&message, ret);
+      ret = 100;
+
+    add_payload_uchar(&message, ret);
   }
 
   else if(strcmp(command, "ambient_color") == 0) {
@@ -193,10 +189,9 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
       ret = strtoul(p, &pp, 10);
 
       if(ret > 0xFF)
-        add_payload_uchar(&message, 0xFF);
-      else
-        add_payload_uchar(&message, ret);
+        ret = 0xFF;
 
+      add_payload_uchar(&message, ret);
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
     }
 
@@ -212,10 +207,9 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
       ret = strtoul(p, &pp, 10);
 
       if(ret > 0xFF)
-        add_payload_uchar(&message, 0xFF);
-      else
-        add_payload_uchar(&message, ret);
+        ret = 0xFF;
 
+      add_payload_uchar(&message, ret);
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
     }
 
@@ -227,9 +221,9 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
     ret = strtoul(parameter, &p, 10);
 
     if(ret > 50)
-      add_payload_uchar(&message, 50);
-    else
-      add_payload_uchar(&message, ret);
+      ret = 50;
+
+    add_payload_uchar(&message, ret);
   }
 
   else if(strcmp(command, "minimum_luminosity") == 0) {
@@ -240,10 +234,9 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
       ret = strtoul(p, &pp, 10);
 
       if(ret > 50)
-        add_payload_uchar(&message, 50);
-      else
-        add_payload_uchar(&message, ret);
+        ret = 50;
 
+      add_payload_uchar(&message, ret);
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
       message.payload_len = i + 1;
     }
@@ -281,10 +274,9 @@ struct DS_message build_message(char *group_addr, char *command, char *parameter
       ret = strtoul(p, &pp, 10);
 
       if(ret > 100)
-        add_payload_uchar(&message, 100);
-      else
-        add_payload_uchar(&message, ret);
+        ret = 100;
 
+      add_payload_uchar(&message, ret);
       p = strtok(NULL, DEFAULT_STRTOK_DELIM);
     }
 
